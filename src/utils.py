@@ -6,6 +6,9 @@ def extract_text_from_srt(filepath):
     with open(filepath) as f:
         text = f.read()
         text_lines = re.findall(pattern, text)
+    
+    with open(filepath, "w") as new_file:
+        new_file.write('\n\n'.join(text_lines))
 
-    return '\n'.join(text_lines)
+extract_text_from_srt('example.srt')
 

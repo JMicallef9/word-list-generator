@@ -16,5 +16,6 @@ def example_srt(tmp_path):
 
 class TestExtractTextFromSrt:
     def test_removes_timestamps(self, example_srt):
-        expected = '''Hello!\nHello!'''
-        assert extract_text_from_srt(example_srt) == expected
+        expected = '''Hello!\n\nHello!'''
+        extract_text_from_srt(example_srt)
+        assert example_srt.read_text() == expected
