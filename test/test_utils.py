@@ -27,3 +27,14 @@ class TestExtractTextFromSrt:
         expected = '''Good morning, Refiners.'''
         extract_text_from_srt(example_srt)
         assert example_srt.read_text() == expected
+    
+    def test_handles_multiple_lines_of_text(self, example_srt):
+        example_srt.write_text('''
+                                6
+                                00:04:33,232 --> 00:04:36,359
+                                <i>This is Mr. Milchick from work,
+                                and I'm thrilled to welcome you</i>''')
+        expected = '''This is Mr. Milchick from work,
+                    and I'm thrilled to welcome you'''
+        extract_text_from_srt(example_srt)
+        assert example_srt.read_text() == expected
