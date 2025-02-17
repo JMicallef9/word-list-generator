@@ -33,3 +33,11 @@ class TestExtractTextFromSrt:
         expected = '''This is Mr. Milchick from work,\nand I'm thrilled to welcome you'''
         extract_text_from_srt(example_srt)
         assert example_srt.read_text() == expected
+    
+    def test_removes_any_other_html_tags(self, example_srt):
+        example_srt.write_text('''5
+                               00:04:30,604 --> 00:04:32,231
+                               <b>Good morning, Refiners.</b>''')
+        expected = '''Good morning, Refiners.'''
+        extract_text_from_srt(example_srt)
+        assert example_srt.read_text() == expected
