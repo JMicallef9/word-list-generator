@@ -7,6 +7,11 @@ def example_srt(tmp_path):
     example_srt = tmp_path / 'example.srt'
     return example_srt
 
+@pytest.fixture
+def example_text():
+    example_text = '''Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus non eros id mi volutpat faucibus. Donec id nulla non nunc iaculis egestas id vestibulum ligula. Duis auctor massa cursus volutpat venenatis. In hac habitasse platea dictumst. Aliquam sit amet laoreet dui, lobortis fermentum neque. Ut quis semper massa, a blandit quam. Duis in laoreet quam, vel facilisis orci. Aliquam at lorem non ligula gravida rhoncus. In eu suscipit lectus. Suspendisse potenti. Duis porta libero orci, id lacinia libero finibus sit amet. Donec nec magna ut ex hendrerit suscipit. In enim quam, aliquam a orci quis, volutpat vestibulum urna. Integer euismod nec diam ac congue. In sit amet sem tortor.'''
+    return example_text
+
 class TestExtractTextFromSrt:
     def test_removes_timestamps(self, example_srt):
         example_srt.write_text("""1
@@ -41,3 +46,10 @@ class TestExtractTextFromSrt:
         expected = '''Good morning, Refiners.'''
         extract_text_from_srt(example_srt)
         assert example_srt.read_text() == expected
+    
+    def test_text_unchanged_if_no_timestamps_or_html_tags(self, example_srt, example_text):
+        example_srt.write_text(example_text)
+        extract_text_from_srt(example_srt)
+        assert example_srt.read_text() == example_text
+    
+
