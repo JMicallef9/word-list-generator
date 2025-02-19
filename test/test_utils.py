@@ -52,4 +52,11 @@ class TestExtractTextFromSrt:
         extract_text_from_srt(example_srt)
         assert example_srt.read_text() == example_text
     
+    def test_error_message_returned_if_filepath_invalid(self, example_srt):
+        example_srt.write_text('''5
+                               00:04:30,604 --> 00:04:32,231
+                               <b>Good morning, Refiners.</b>''')
+        with pytest.raises(FileNotFoundError) as err:
+            extract_text_from_srt('example1.srt')
+        assert str(err.value) == "Error: The file 'example1.srt' was not found."
 
