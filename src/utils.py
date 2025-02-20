@@ -35,5 +35,10 @@ def extract_text_from_srt(filepath):
         with open(filepath, "w", encoding="utf-8") as f:
             f.write(cleaned_text)
         
+        return cleaned_text
+        
     except RuntimeError:
         raise RuntimeError(f"Error: Could not read the file '{filepath}'")
+
+def generate_word_list(text):
+    pass
