@@ -20,37 +20,42 @@ class TestExtractTextFromSrt:
                                00:00:41,291 --> 00:00:42,751
                                Hello!""")
         expected = '''Hello!\n\nHello!'''
-        extract_text_from_srt(example_srt)
+        output = extract_text_from_srt(example_srt)
         assert example_srt.read_text() == expected
+        assert output == expected
     
     def test_removes_italic_markers(self, example_srt):
         example_srt.write_text('''5
                                00:04:30,604 --> 00:04:32,231
                                <i>Good morning, Refiners.</i>''')
         expected = '''Good morning, Refiners.'''
-        extract_text_from_srt(example_srt)
+        output = extract_text_from_srt(example_srt)
         assert example_srt.read_text() == expected
+        assert output == expected
     
     def test_handles_multiple_lines_of_text(self, example_srt):
         example_srt.write_text('''6
                                 00:04:33,232 --> 00:04:36,359
                                 <i>This is Mr. Milchick from work,\nand I'm thrilled to welcome you</i>''')
         expected = '''This is Mr. Milchick from work,\nand I'm thrilled to welcome you'''
-        extract_text_from_srt(example_srt)
+        output = extract_text_from_srt(example_srt)
         assert example_srt.read_text() == expected
+        assert output == expected
     
     def test_removes_any_other_html_tags(self, example_srt):
         example_srt.write_text('''5
                                00:04:30,604 --> 00:04:32,231
                                <b>Good morning, Refiners.</b>''')
         expected = '''Good morning, Refiners.'''
-        extract_text_from_srt(example_srt)
+        output = extract_text_from_srt(example_srt)
         assert example_srt.read_text() == expected
+        assert output == expected
     
     def test_text_unchanged_if_no_timestamps_or_html_tags(self, example_srt, example_text):
         example_srt.write_text(example_text)
-        extract_text_from_srt(example_srt)
+        output = extract_text_from_srt(example_srt)
         assert example_srt.read_text() == example_text
+        assert output == example_text
     
     def test_error_message_returned_if_filepath_invalid(self):
         with pytest.raises(FileNotFoundError) as err:
@@ -66,8 +71,10 @@ class TestExtractTextFromSrt:
 
     def test_blank_document_remains_unchanged(self, example_srt):
         example_srt.touch()
-        extract_text_from_srt(example_srt)
+        output = extract_text_from_srt(example_srt)
         assert not example_srt.read_text()
+        assert not output
+        
 
 
 
