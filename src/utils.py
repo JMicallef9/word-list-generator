@@ -3,6 +3,15 @@ from pathlib import Path
 
 
 def extract_text_from_srt(filepath):
+    """
+    Removes timestamps and formatting from SRT subtitle files.
+    
+    Args:
+        filepath (str): The path to a .txt or .srt file.
+    
+    Returns:
+        None
+    """
     valid_formats = ['.srt', '.txt', '.md']
 
     filepath = Path(filepath)
