@@ -1,4 +1,4 @@
-from src.utils import extract_text_from_srt
+from src.utils import extract_text_from_srt, generate_word_list
 import pytest
 
 
@@ -75,6 +75,43 @@ class TestExtractTextFromSrt:
         assert not example_srt.read_text()
         assert not output
         
+class TestGenerateWordList:
+    def test_empty_dict_returned_if_no_input(self):
+        assert generate_word_list('') == {}
+
+    def test_returns_dictionary(self):
+        output = generate_word_list('hello')
+        assert isinstance(output, dict)
+
+    def test_counts_single_word(self):
+        output = generate_word_list('hello')
+        assert output == {'hello': 1}
+    
+    def test_counts_multiple_words(self):
+        assert generate_word_list('hello world') == {'hello': 1, 'world': 1}
+    
+    def test_counts_multiple_instances_of_same_word(self):
+        assert generate_word_list('hello world hello') == {'hello': 2, 'world': 1}
+
+    def test_ignores_capital_letters(self):
+        assert generate_word_list('Hello world hello') == {'hello': 2, 'world': 1}
+
+    def test_filters_out_punctuation_and_lists(self):
+        text = "The quick brown fox jumps over the lazy dog. The dog was not amused?"
+        assert generate_word_list(text) == {'amused': 1, 'brown': 1, 'dog': 2, 'fox': 1, 'jumps': 1, 'lazy': 1, 'not': 1, 'over': 1, 'quick': 1, 'the': 3, 'was': 1}
+    
+    def test_filters_out_additional_punctuation_characters(self):
+        text = '''¿Sueles leer antes de dormir? Al principio: <Si trabajas duro, conseguirás lo que quieres.>>'''
+        assert generate_word_list(text) == {'sueles': 1, 'leer': 1, 'antes': 1, 'de': 1, 'dormir': 1, 'al': 1, 'principio': 1, 'si': 1, 'trabajas': 1, 'duro': 1, 'conseguirás': 1, 'lo': 1, 'que': 1, 'quieres': 1}
+    
+    def test_handles_text_in_cyrillic_script(self):
+        text = 'Старик был сварливым'
+        assert generate_word_list(text) == {'старик': 1, 'был': 1, 'сварливым': 1}
+    
+    def test_ignores_whitespace_characters(self):
+        text = '''Hello\nworld\teverything\nis\tfine'''
+        assert generate_word_list(text) == {'hello': 1, 'world': 1, 'everything': 1, 'is': 1, 'fine': 1}
+
 
 
 
