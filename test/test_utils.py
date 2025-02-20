@@ -52,11 +52,21 @@ class TestExtractTextFromSrt:
         extract_text_from_srt(example_srt)
         assert example_srt.read_text() == example_text
     
-    def test_error_message_returned_if_filepath_invalid(self, example_srt):
-        example_srt.write_text('''5
-                               00:04:30,604 --> 00:04:32,231
-                               <b>Good morning, Refiners.</b>''')
+    def test_error_message_returned_if_filepath_invalid(self):
         with pytest.raises(FileNotFoundError) as err:
             extract_text_from_srt('example1.srt')
         assert str(err.value) == "Error: The file 'example1.srt' was not found."
+    
+    def test_IO_error_occurs_if_file_format_is_invalid(self, tmp_path):
+        example_mkv = tmp_path / 'example.mkv'
+        example_mkv.touch()
+        with pytest.raises(IOError) as err:
+            extract_text_from_srt(example_mkv)
+        assert str(err.value) == "Error: Could not read the file contents of 'example.mkv'. File format is invalid."
+
+        
+
+
+
+
 
