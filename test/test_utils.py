@@ -64,7 +64,10 @@ class TestExtractTextFromSrt:
             extract_text_from_srt(example_mkv)
         assert str(err.value) == "Error: Could not read the file contents of 'example.mkv'. File format is invalid."
 
-        
+    def test_blank_document_remains_unchanged(self, example_srt):
+        example_srt.touch()
+        extract_text_from_srt(example_srt)
+        assert not example_srt.read_text()
 
 
 
