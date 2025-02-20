@@ -1,5 +1,7 @@
 import re
 from pathlib import Path
+from collections import defaultdict
+from string import punctuation
 
 
 def extract_text_from_srt(filepath):
@@ -41,4 +43,11 @@ def extract_text_from_srt(filepath):
         raise RuntimeError(f"Error: Could not read the file '{filepath}'")
 
 def generate_word_list(text):
-    pass
+    word_freq = defaultdict(int)
+    punc_chars = punctuation + '¿¡'
+    if text:
+        words = text.lower().split()
+        for word in words:
+            word = re.sub(rf'[{punc_chars}]', '', word)
+            word_freq[word] += 1 
+    return word_freq
