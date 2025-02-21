@@ -2,6 +2,7 @@ import re
 from pathlib import Path
 from collections import defaultdict
 from string import punctuation
+import csv
 
 
 def extract_text_from_srt(filepath):
@@ -60,3 +61,11 @@ def generate_word_list(text):
             word = re.sub(rf'[{punc_chars}]', '', word)
             word_freq[word] += 1 
     return word_freq
+
+def convert_word_list_to_csv(words, filepath):
+    sorted_words = sorted(words.items())
+
+    with open(filepath, mode="w", newline="") as file:
+        writer = csv.writer(file)
+        for word, count in sorted_words:
+            writer.writerow([f"{word}: {count}"])
