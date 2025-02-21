@@ -65,6 +65,18 @@ def generate_word_list(text):
     return word_freq
 
 def convert_word_list_to_csv(words, filepath, input_lang, target_lang):
+    """
+    Creates a CSV file containing words and their translations.
+
+    Args:
+        words (dict): A dictionary containing words and word frequencies.
+        filepath (str): The intended filepath of the CSV file.
+        input_lang (str): The language code representing the language of the inputted words.
+        target_lang (str): The language code of the language in which translations will be provided in the CSV file.
+    
+    Returns:
+        None
+    """
     sorted_words = sorted(words.items())
     translator = GoogleTranslator(source=input_lang, target=target_lang)
 
