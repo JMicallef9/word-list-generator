@@ -43,6 +43,15 @@ def extract_text_from_srt(filepath):
         raise RuntimeError(f"Error: Could not read the file '{filepath}'")
 
 def generate_word_list(text):
+    """
+    Generates a list of words and word frequencies in a given text.
+    
+    Args:
+        text (str): Text containing the words to be counted.
+    
+    Returns:
+        dict: A dictionary containing words and the number of times they appear in the text.
+    """
     word_freq = defaultdict(int)
     punc_chars = punctuation + '¿¡'
     if text:
