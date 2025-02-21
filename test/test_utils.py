@@ -1,11 +1,17 @@
-from src.utils import extract_text_from_srt, generate_word_list
+from src.utils import extract_text_from_srt, generate_word_list, convert_word_list_to_csv
 import pytest
+import csv
 
 
 @pytest.fixture
 def example_srt(tmp_path):
     example_srt = tmp_path / 'example.srt'
     return example_srt
+
+@pytest.fixture
+def example_csv(tmp_path):
+    example_csv = tmp_path / 'example.csv'
+    return example_csv
 
 @pytest.fixture
 def example_text():
@@ -112,6 +118,28 @@ class TestGenerateWordList:
         text = '''Hello\nworld\teverything\nis\tfine'''
         assert generate_word_list(text) == {'hello': 1, 'world': 1, 'everything': 1, 'is': 1, 'fine': 1}
 
+class TestConvertToCSV:
+    def test_creates_csv_file(self, example_csv):
+        input = {'hello': 1}
+        convert_word_list_to_csv(input, example_csv)
+        assert example_csv.exists()
+    
+    def test_converts_single_key_value_pair_to_csv(self, example_csv):
+        input = {'hello': 1}
+        convert_word_list_to_csv(input, example_csv)
+        with open(example_csv, newline="") as file:
+            reader = csv.reader(file)
+            first_row = next(reader)
+            assert first_row[0] == 'hello: 1'
+    
+    def test_sorts_and_converts_multiple_key_value_pairs(self, example_csv):
+        input = {'hello': 1, 'world': 1, 'abacus': 1}
+        convert_word_list_to_csv(input, example_csv)
+        with open(example_csv, newline="") as file:
+            reader = csv.reader(file)
+            assert next(reader)[0] == 'abacus: 1'
+            assert next(reader)[0] == 'hello: 1'
+            assert next(reader)[0] == 'world: 1'
 
 
 
