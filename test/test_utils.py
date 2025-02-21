@@ -121,12 +121,12 @@ class TestGenerateWordList:
 class TestConvertToCSV:
     def test_creates_csv_file(self, example_csv):
         input = {'hello': 1}
-        convert_word_list_to_csv(input, example_csv)
+        convert_word_list_to_csv(input, example_csv, "en", "de")
         assert example_csv.exists()
     
     def test_converts_single_key_value_pair_to_csv(self, example_csv):
         input = {'hello': 1}
-        convert_word_list_to_csv(input, example_csv)
+        convert_word_list_to_csv(input, example_csv, "en", "de")
         with open(example_csv, newline="") as file:
             reader = csv.reader(file)
             first_row = next(reader)
@@ -134,13 +134,36 @@ class TestConvertToCSV:
     
     def test_sorts_and_converts_multiple_key_value_pairs(self, example_csv):
         input = {'hello': 1, 'world': 1, 'abacus': 1}
-        convert_word_list_to_csv(input, example_csv)
+        convert_word_list_to_csv(input, example_csv, "en", "de")
         with open(example_csv, newline="") as file:
             reader = csv.reader(file)
             assert next(reader)[0] == 'abacus: 1'
             assert next(reader)[0] == 'hello: 1'
             assert next(reader)[0] == 'world: 1'
 
+    def test_adds_translation_to_single_key_value_pair(self, example_csv):
+        input = {'hello': 1}
+        convert_word_list_to_csv(input, example_csv, "en", "fr")
+        with open(example_csv, newline="") as file:
+            reader = csv.reader(file)
+            first_row = next(reader)
+            assert first_row[0] == 'hello: 1'
+            assert first_row[1].lower() == 'bonjour'
+    
+    def test_adds_translations_for_multiple_words(self, example_csv):
+        input = {'hello': 1, 'world': 1, 'abacus': 1}
+        convert_word_list_to_csv(input, example_csv, "en", "fr")
+        with open(example_csv, newline="") as file:
+            reader = csv.reader(file)
+            first_row = next(reader)
+            assert first_row[0] == 'abacus: 1'
+            assert first_row[1].lower() == 'abaque'
+            second_row = next(reader)
+            assert second_row[0] == 'hello: 1'
+            assert second_row[1].lower() == 'bonjour'
+            third_row = next(reader)
+            assert third_row[0] == 'world: 1'
+            assert third_row[1].lower() == 'monde'
 
 
 

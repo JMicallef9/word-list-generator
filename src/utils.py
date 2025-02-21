@@ -3,6 +3,8 @@ from pathlib import Path
 from collections import defaultdict
 from string import punctuation
 import csv
+from deep_translator import GoogleTranslator
+
 
 
 def extract_text_from_srt(filepath):
@@ -62,10 +64,12 @@ def generate_word_list(text):
             word_freq[word] += 1 
     return word_freq
 
-def convert_word_list_to_csv(words, filepath):
+def convert_word_list_to_csv(words, filepath, input_lang, target_lang):
     sorted_words = sorted(words.items())
+    translator = GoogleTranslator(source=input_lang, target=target_lang)
 
     with open(filepath, mode="w", newline="") as file:
         writer = csv.writer(file)
         for word, count in sorted_words:
-            writer.writerow([f"{word}: {count}"])
+            print(word)
+            writer.writerow([f"{word}: {count}", translator.translate(word)])
