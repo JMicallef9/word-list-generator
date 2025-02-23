@@ -65,6 +65,16 @@ def generate_word_list(text):
     return word_freq
 
 def check_for_new_words(text_words, anki_words):
+    """
+    Removes words from a word frequency dictionary if they are already stored in an existing set.
+    
+    Args:
+        text_words (dict): A dictionary containing words and words frequencies.
+        anki_words (set): A set containing unique words retrieved from an Anki deck.
+    
+    Returns:
+        A new dictionary with the words from the set removed.
+    """
     new_words = {}
     for key, value in text_words.items():
         if key not in anki_words:
