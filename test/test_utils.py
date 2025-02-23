@@ -1,4 +1,4 @@
-from src.utils import extract_text_from_srt, generate_word_list, convert_word_list_to_csv
+from src.utils import extract_text_from_srt, generate_word_list, convert_word_list_to_csv, check_for_new_words
 import pytest
 import csv
 
@@ -165,6 +165,22 @@ class TestConvertToCSV:
             assert third_row[0] == 'world: 1'
             assert third_row[1].lower() == 'monde'
 
-
+class TestCheckForNewWords:
+    def test_returns_new_dict(self):
+        input_dict = {'hello': 1}
+        input_set = {'word'}
+        output = check_for_new_words(input_dict, input_set)
+        assert output is not input_dict
+    
+    def test_dict_unchanged_if_set_contains_no_matches(self):
+        input_dict = {'hello': 1}
+        input_set = {'word'}
+        output = check_for_new_words(input_dict, input_set)
+        assert output == {'hello': 1}
+    
+    def test_dict_item_removed_if_match_found(self):
+        input_dict = {'hello': 1, 'world': 1}
+        input_set = {'world'}
+        assert check_for_new_words(input_dict, input_set) == {'hello': 1}
 
 
