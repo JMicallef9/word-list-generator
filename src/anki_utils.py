@@ -6,6 +6,15 @@ import re
 anki_connect_url = "http://localhost:8765"
 
 def get_anki_decks():
+    """
+    Returns a list of the user's Anki decks.
+    
+    Args:
+        None.
+    
+    Returns:
+        list: A list containing the names of all the decks in the user's Anki collection.
+    """
     payload = {
         "action": "deckNames",
         "version": 6
@@ -14,6 +23,15 @@ def get_anki_decks():
     return response.json().get("result", [])
 
 def get_words_from_deck(deck_name):
+    """
+    Retrieves all the unique words that appear in an Anki deck.
+    
+    Args:
+        deck_name (str): The name of an Anki deck.
+    
+    Returns:
+        set: All the unique words appearing on the front or back of the Anki cards in the given deck.
+    """
     query = f'deck:"{deck_name}"'
 
     notes_payload = {
