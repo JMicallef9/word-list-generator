@@ -7,7 +7,7 @@ from deep_translator import GoogleTranslator
 
 
 
-def extract_text_from_srt(filepath):
+def extract_text_from_file(filepath):
     """
     Removes timestamps and formatting from SRT subtitle files.
     
