@@ -15,7 +15,7 @@ def extract_text_from_srt(filepath):
         filepath (str): The path to a .txt or .srt file.
     
     Returns:
-        None
+        str: The text from the given file, with timestamps and formatting removed.
     """
     valid_formats = ['.srt', '.txt', '.md']
 
@@ -36,9 +36,6 @@ def extract_text_from_srt(filepath):
             text = f.read()
             
         cleaned_text = re.sub(combined_pattern, "", text)
-
-        with open(filepath, "w", encoding="utf-8") as f:
-            f.write(cleaned_text)
         
         return cleaned_text
         
