@@ -64,6 +64,13 @@ def generate_word_list(text):
             word_freq[word] += 1 
     return word_freq
 
+def check_for_new_words(text_words, anki_words):
+    new_words = {}
+    for key, value in text_words.items():
+        if key not in anki_words:
+            new_words[key] = value
+    return new_words
+
 def convert_word_list_to_csv(words, filepath, input_lang, target_lang):
     """
     Creates a CSV file containing words and their translations.
@@ -83,5 +90,4 @@ def convert_word_list_to_csv(words, filepath, input_lang, target_lang):
     with open(filepath, mode="w", newline="") as file:
         writer = csv.writer(file)
         for word, count in sorted_words:
-            print(word)
             writer.writerow([f"{word}: {count}", translator.translate(word)])
