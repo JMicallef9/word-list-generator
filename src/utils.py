@@ -98,3 +98,27 @@ def convert_word_list_to_csv(words, filepath, input_lang, target_lang):
         writer = csv.writer(file)
         for word, count in sorted_words:
             writer.writerow([f"{word}: {count}", translator.translate(word)])
+    
+def get_user_language(test_inputs=None):
+    valid_languages = GoogleTranslator().get_supported_languages(as_dict=True)
+
+    if test_inputs:
+        test_inputs = iter(test_inputs)
+
+    while True:
+        user_lang = next(test_inputs) if test_inputs else input("Please enter a language name or two-letter language code.\nTo see a list of all available languages, press L")
+        user_lang = user_lang.strip().lower()
+
+        if user_lang in valid_languages.values():
+            return user_lang
+        elif user_lang in valid_languages.keys():
+            return valid_languages[user_lang]
+        elif user_lang == 'l':
+            print('Available languages: ')
+            for lang_name, lang_code in valid_languages.items():
+                print(f'{lang_name}: {lang_code}')
+            print('\n')
+        
+        print('''Please enter a valid language name or two-letter language code.\nTo see a list of all available languages, press L''')
+
+
