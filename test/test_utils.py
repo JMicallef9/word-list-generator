@@ -1,4 +1,4 @@
-from src.utils import extract_text_from_file, generate_word_list, convert_word_list_to_csv, check_for_new_words
+from src.utils import extract_text_from_file, generate_word_list, convert_word_list_to_csv, check_for_new_words, get_user_language
 import pytest
 import csv
 
@@ -178,5 +178,34 @@ class TestCheckForNewWords:
         input_dict = {'hello': 1, 'world': 1}
         input_set = {'world'}
         assert check_for_new_words(input_dict, input_set) == {'hello': 1}
+
+class TestGetUserLanguage:
+    def test_returns_language_code_entered_by_user(self):
+        assert get_user_language(['es']) == 'es'
+    
+    def test_returns_language_code_if_user_enters_language_name(self):
+        assert get_user_language(['spanish']) == 'es'
+    
+    def test_ignores_capitalisation(self):
+        assert get_user_language(['Spanish']) == 'es'
+        assert get_user_language(['ES']) == 'es'
+        assert get_user_language(['SPANISH']) == 'es'
+    
+    def test_handles_invalid_input_followed_by_valid_input(self, capsys):
+        assert get_user_language(['invalid', 'French']) == 'fr'
+        captured = capsys.readouterr()
+        assert "Please enter a valid language name or two-letter language code.\nTo see a list of all available languages, press L" in captured.out
+    
+    def test_available_languages_printed_upon_user_request(self, capsys):
+        assert get_user_language(['l', 'French']) == 'fr'
+        captured = capsys.readouterr()
+        assert "Available languages: " in captured.out
+        assert 'french: fr' in captured.out
+        assert 'spanish: es' in captured.out
+    
+
+
+
+        
 
 
