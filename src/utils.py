@@ -124,3 +124,21 @@ def get_user_language(test_inputs=None):
         else:
             print('Invalid input.')
 
+
+def convert_word_list_to_csv(words, filepath):
+    """
+    Creates a CSV file containing words and word frequencies from a given text.
+
+    Args:
+        words (dict): A dictionary containing words and word frequencies.
+        filepath (str): The intended filepath of the CSV file.
+    
+    Returns:
+        None
+    """
+    sorted_words = sorted(words.items())
+
+    with open(filepath, mode="w", newline="") as file:
+        writer = csv.writer(file)
+        for word, count in sorted_words:
+            writer.writerow([f"{word}: {count}"])
