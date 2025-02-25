@@ -194,7 +194,7 @@ class TestGetUserLanguage:
     def test_handles_invalid_input_followed_by_valid_input(self, capsys):
         assert get_user_language(['invalid', 'French']) == 'fr'
         captured = capsys.readouterr()
-        assert "Please enter a valid language name or two-letter language code.\nTo see a list of all available languages, press L" in captured.out
+        assert "Invalid input." in captured.out
     
     def test_available_languages_printed_upon_user_request(self, capsys):
         assert get_user_language(['l', 'French']) == 'fr'
