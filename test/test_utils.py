@@ -113,6 +113,10 @@ class TestGenerateWordList:
     def test_ignores_whitespace_characters(self):
         text = '''Hello\nworld\teverything\nis\tfine'''
         assert generate_word_list(text) == {'hello': 1, 'world': 1, 'everything': 1, 'is': 1, 'fine': 1}
+    
+    def test_hyphens_ignored_in_middle_of_words(self):
+        text = '''hello, first, second, físico-químico.'''
+        assert generate_word_list(text) == {'hello': 1, 'first': 1, 'second': 1, 'físico-químico': 1}
 
 class TestConvertToCSVWithTranslations:
     def test_creates_csv_file(self, example_csv):
@@ -226,4 +230,3 @@ class TestConvertToCSV:
             assert next(reader)[0] == 'abacus: 1'
             assert next(reader)[0] == 'hello: 1'
             assert next(reader)[0] == 'world: 1'
-
