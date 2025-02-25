@@ -58,7 +58,7 @@ def get_words_from_deck(deck_name):
     for note in notes:
         words = note['fields']['Front']['value'].lower().split() + note['fields']['Back']['value'].lower().split()
         for word in words:
-            word = re.sub(rf'^[{punc_chars}]|[{punc_chars}]$', '', word)
+            word = re.sub(rf'^[{punc_chars}]*|[{punc_chars}]*$', '', word)
             if word:
                 word_list.add(word)
     
