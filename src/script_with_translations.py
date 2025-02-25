@@ -22,7 +22,7 @@ def word_list_generator():
 
         while True:
             csv_name = input("\nPlease enter the destination filepath for the output CSV file: ")
-            if Path(csv_name).parent and not Path(csv_name).exists():
+            if not Path(csv_name).parent.exists():
                 print("Invalid filepath. Please provide a valid filepath (e.g., /path/to/input.txt).")
                 continue
             break
