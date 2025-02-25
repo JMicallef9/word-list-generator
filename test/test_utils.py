@@ -1,4 +1,4 @@
-from src.utils import extract_text_from_file, generate_word_list, convert_word_list_to_csv, check_for_new_words, get_user_language
+from src.utils import extract_text_from_file, generate_word_list, convert_word_list_to_csv_with_translations, check_for_new_words, get_user_language
 import pytest
 import csv
 
@@ -114,15 +114,15 @@ class TestGenerateWordList:
         text = '''Hello\nworld\teverything\nis\tfine'''
         assert generate_word_list(text) == {'hello': 1, 'world': 1, 'everything': 1, 'is': 1, 'fine': 1}
 
-class TestConvertToCSV:
+class TestConvertToCSVWithTranslations:
     def test_creates_csv_file(self, example_csv):
         input = {'hello': 1}
-        convert_word_list_to_csv(input, example_csv, "en", "de")
+        convert_word_list_to_csv_with_translations(input, example_csv, "en", "de")
         assert example_csv.exists()
     
     def test_converts_single_key_value_pair_to_csv(self, example_csv):
         input = {'hello': 1}
-        convert_word_list_to_csv(input, example_csv, "en", "de")
+        convert_word_list_to_csv_with_translations(input, example_csv, "en", "de")
         with open(example_csv, newline="") as file:
             reader = csv.reader(file)
             first_row = next(reader)
@@ -130,7 +130,7 @@ class TestConvertToCSV:
     
     def test_sorts_and_converts_multiple_key_value_pairs(self, example_csv):
         input = {'hello': 1, 'world': 1, 'abacus': 1}
-        convert_word_list_to_csv(input, example_csv, "en", "de")
+        convert_word_list_to_csv_with_translations(input, example_csv, "en", "de")
         with open(example_csv, newline="") as file:
             reader = csv.reader(file)
             assert next(reader)[0] == 'abacus: 1'
@@ -139,7 +139,7 @@ class TestConvertToCSV:
 
     def test_adds_translation_to_single_key_value_pair(self, example_csv):
         input = {'hello': 1}
-        convert_word_list_to_csv(input, example_csv, "en", "fr")
+        convert_word_list_to_csv_with_translations(input, example_csv, "en", "fr")
         with open(example_csv, newline="") as file:
             reader = csv.reader(file)
             first_row = next(reader)
@@ -148,7 +148,7 @@ class TestConvertToCSV:
     
     def test_adds_translations_for_multiple_words(self, example_csv):
         input = {'hello': 1, 'world': 1, 'abacus': 1}
-        convert_word_list_to_csv(input, example_csv, "en", "fr")
+        convert_word_list_to_csv_with_translations(input, example_csv, "en", "fr")
         with open(example_csv, newline="") as file:
             reader = csv.reader(file)
             first_row = next(reader)

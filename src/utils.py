@@ -78,7 +78,7 @@ def check_for_new_words(text_words, anki_words):
             new_words[key] = value
     return new_words
 
-def convert_word_list_to_csv(words, filepath, input_lang, target_lang):
+def convert_word_list_to_csv_with_translations(words, filepath, input_lang, target_lang):
     """
     Creates a CSV file containing words and their translations.
 
