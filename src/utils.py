@@ -94,10 +94,13 @@ def convert_word_list_to_csv(words, filepath, input_lang, target_lang):
     sorted_words = sorted(words.items())
     translator = GoogleTranslator(source=input_lang, target=target_lang)
 
+    word_list = [word for word, count in sorted_words]
+    translated_words = translator.translate_batch(word_list)
+
     with open(filepath, mode="w", newline="") as file:
         writer = csv.writer(file)
-        for word, count in sorted_words:
-            writer.writerow([f"{word}: {count}", translator.translate(word)])
+        for (word, count), translation in zip(sorted_words, translated_words):
+            writer.writerow([f"{word}: {count}", translation])
     
 def get_user_language(test_inputs=None):
     valid_languages = GoogleTranslator().get_supported_languages(as_dict=True)
@@ -118,7 +121,6 @@ def get_user_language(test_inputs=None):
             for lang_name, lang_code in valid_languages.items():
                 print(f'{lang_name}: {lang_code}')
             print('\n')
-        
-        print('''Please enter a valid language name or two-letter language code.\nTo see a list of all available languages, press L''')
-
+        else:
+            print('Invalid input.')
 
