@@ -1,4 +1,4 @@
-from src.utils import extract_text_from_file, generate_word_list, convert_word_list_to_csv_with_translations, check_for_new_words, get_user_language
+from src.utils import extract_text_from_file, generate_word_list, convert_word_list_to_csv_with_translations, check_for_new_words, get_user_language, convert_word_list_to_csv
 import pytest
 import csv
 
@@ -204,8 +204,26 @@ class TestGetUserLanguage:
         assert 'spanish: es' in captured.out
     
 
-
-
-        
-
+class TestConvertToCSV:
+    def test_creates_csv_file(self, example_csv):
+        input = {'hello': 1}
+        convert_word_list_to_csv(input, example_csv)
+        assert example_csv.exists()
+    
+    def test_converts_single_key_value_pair_to_csv(self, example_csv):
+        input = {'hello': 1}
+        convert_word_list_to_csv(input, example_csv)
+        with open(example_csv, newline="") as file:
+            reader = csv.reader(file)
+            first_row = next(reader)
+            assert first_row[0] == 'hello: 1'
+    
+    def test_sorts_and_converts_multiple_key_value_pairs(self, example_csv):
+        input = {'hello': 1, 'world': 1, 'abacus': 1}
+        convert_word_list_to_csv(input, example_csv)
+        with open(example_csv, newline="") as file:
+            reader = csv.reader(file)
+            assert next(reader)[0] == 'abacus: 1'
+            assert next(reader)[0] == 'hello: 1'
+            assert next(reader)[0] == 'world: 1'
 
