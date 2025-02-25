@@ -1,4 +1,4 @@
-from utils import extract_text_from_file, generate_word_list, check_for_new_words, get_user_language
+from utils import extract_text_from_file, generate_word_list, check_for_new_words, get_user_language, convert_word_list_to_csv
 from anki_utils import get_anki_decks, get_words_from_deck
 from pathlib import Path
 
@@ -13,7 +13,9 @@ def word_list_generator():
 
     text = extract_text_from_file(file_to_process)
 
-    anki_check = input("\nDo you want to filter the list using an Anki deck? (Y/n): ").strip().lower()
+    print(f"\nText successfully extracted from the following file: {file_to_process}")
+
+    anki_check = input("\nDo you want to filter the word list using an Anki deck? (Y/n): ").strip().lower()
 
     if anki_check == 'y':
         pass
@@ -30,9 +32,12 @@ def word_list_generator():
 
         word_counts = generate_word_list(text)
 
+        print('\nCreating CSV file...')
+
         convert_word_list_to_csv(word_counts, csv_name)
 
         print(f"Word list file created: {csv_name}")
+
 
 if __name__ == '__main__':
     word_list_generator()
