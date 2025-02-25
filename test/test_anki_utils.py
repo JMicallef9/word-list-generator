@@ -181,3 +181,24 @@ class TestGetWordsFromDeck:
             assert output == {'físico-químico', 'test', 'front', 'content', 'back'}
 
 
+    def test_multiple_punctuation_characters_ignored_in_output(self):
+        with patch("requests.post") as mock_post:
+            mock_post.side_effect = [{
+    "result": [1483959289817, 1483959291695],
+    "error": None
+}, {
+    "result": [
+        {
+            "noteId":1502298033753,
+            "modelName": "Basic",
+            "tags":["tag","another_tag"],
+            "fields": {
+                "Front": {"value": "hello: okay!!!, everybody?!", "order": 0},
+                "Back": {"value": "Meaning = 'hello'", "order": 1}
+            }
+        }
+    ],
+    "error": None
+}]
+            output = get_words_from_deck('deck_name')
+            assert output == {'hello', 'okay', 'everybody', 'meaning'}
