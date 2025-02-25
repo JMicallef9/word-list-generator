@@ -57,8 +57,9 @@ def generate_word_list(text):
     if text:
         words = text.lower().split()
         for word in words:
-            word = re.sub(rf'[{punc_chars}]', '', word)
-            word_freq[word] += 1 
+            word = re.sub(rf'^[{punc_chars}]*|[{punc_chars}]*$', '', word)
+            if word:
+                word_freq[word] += 1 
     return word_freq
 
 def check_for_new_words(text_words, anki_words):
@@ -141,4 +142,5 @@ def convert_word_list_to_csv(words, filepath):
     with open(filepath, mode="w", newline="") as file:
         writer = csv.writer(file)
         for word, count in sorted_words:
-            writer.writerow([f"{word}: {count}"])
+            if word:
+                writer.writerow([f"{word}: {count}"])
