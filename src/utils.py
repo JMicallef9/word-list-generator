@@ -109,7 +109,7 @@ def get_user_language(test_inputs=None):
         test_inputs = iter(test_inputs)
 
     while True:
-        user_lang = next(test_inputs) if test_inputs else input("Please enter a language name or two-letter language code.\nTo see a list of all available languages, press L")
+        user_lang = next(test_inputs) if test_inputs else input("Please enter a language name or two-letter language code.\nTo see a list of all available languages, press L.\n")
         user_lang = user_lang.strip().lower()
 
         if user_lang in valid_languages.values():
