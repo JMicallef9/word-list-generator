@@ -4,6 +4,7 @@ from collections import defaultdict
 from string import punctuation
 import csv
 from deep_translator import GoogleTranslator
+import unicodedata
 
 
 
@@ -36,7 +37,9 @@ def extract_text_from_file(filepath):
             text = f.read()
             
         cleaned_text = re.sub(combined_pattern, "", text)
-        
+        cleaned_text = re.sub(r'[\u200B\u200C\u200D\u2060\uFEFF]', '', cleaned_text)
+        cleaned_text = unicodedata.normalize("NFC", cleaned_text)
+
         return cleaned_text
         
     except RuntimeError:
@@ -53,7 +56,7 @@ def generate_word_list(text):
         dict: A dictionary containing words and the number of times they appear in the text.
     """
     word_freq = defaultdict(int)
-    punc_chars = punctuation + '¿¡'
+    punc_chars = punctuation + '¿¡♪'
     if text:
         words = text.lower().split()
         for word in words:
@@ -71,7 +74,7 @@ def check_for_new_words(text_words, anki_words):
         anki_words (set): A set containing unique words retrieved from an Anki deck.
     
     Returns:
-        A new dictionary with the words from the set removed.
+        dict: A new dictionary with the words from the set removed.
     """
     new_words = {}
     for key, value in text_words.items():
@@ -143,4 +146,4 @@ def convert_word_list_to_csv(words, filepath):
         writer = csv.writer(file)
         for word, count in sorted_words:
             if word:
-                writer.writerow([f"{word}: {count}"])
+                writer.writerow([word, count])
