@@ -67,7 +67,7 @@ def get_words_from_deck(deck_name):
         word_string = re.sub(r'<[^>]+>', ' ', word_string)
         word_string = html.unescape(word_string)
 
-        words = re.findall(r'\b\w[\w\'-]*\b', word_string, re.UNICODE)
+        words = re.findall(r'\b\w[\w\'-]*\b', word_string)
 
         for word in words:
             word = re.sub(rf'^[{punc_chars}]*|[{punc_chars}]*$', '', word)
