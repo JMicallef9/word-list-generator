@@ -220,13 +220,20 @@ class TestConvertToCSV:
         with open(example_csv, newline="") as file:
             reader = csv.reader(file)
             first_row = next(reader)
-            assert first_row[0] == 'hello: 1'
+            assert first_row[0] == 'hello'
+            assert int(first_row[1]) == 1
     
     def test_sorts_and_converts_multiple_key_value_pairs(self, example_csv):
         input = {'hello': 1, 'world': 1, 'abacus': 1}
         convert_word_list_to_csv(input, example_csv)
         with open(example_csv, newline="") as file:
             reader = csv.reader(file)
-            assert next(reader)[0] == 'abacus: 1'
-            assert next(reader)[0] == 'hello: 1'
-            assert next(reader)[0] == 'world: 1'
+            first_row = next(reader)
+            assert first_row[0] == 'abacus'
+            assert int(first_row[1]) == 1
+            second_row = next(reader)
+            assert second_row[0] == 'hello'
+            assert int(second_row[1]) == 1
+            third_row = next(reader)
+            assert third_row[0] == 'world'
+            assert int(third_row[1]) == 1
