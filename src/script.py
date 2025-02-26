@@ -15,28 +15,43 @@ def word_list_generator():
 
     print(f"\nText successfully extracted from the following file: {file_to_process}")
 
+    word_counts = generate_word_list(text)
+
     anki_check = input("\nDo you want to filter the word list using an Anki deck? (Y/n): ").strip().lower()
 
     if anki_check == 'y':
-        pass
+        decks = get_anki_decks()
 
-    else:
+        print("\nWhich deck(s) would you like to filter by? Please select one or more options, separated by commas.\n")
 
-        while True:
-            csv_name = input("\nPlease enter the destination filepath for the output CSV file: ")
-            if not Path(csv_name).parent.exists():
-                print("Invalid filepath. Please provide a valid filepath (e.g., /path/to/input.txt).")
-                continue
-            break
+        for i, deck in enumerate(decks, 1):
+            print(f"{i}: {deck}")
+        
+        user_choice = input("Enter your choice(s): ")
 
+        selected_options = [int(num.strip()) for num in user_choice.split(",")]
 
-        word_counts = generate_word_list(text)
+        selected_decks = [decks[num - 1] for num in selected_options]
 
-        print('\nCreating CSV file...')
+        print("You selected the following decks:\n")
 
-        convert_word_list_to_csv(word_counts, csv_name)
+        for deck in selected_decks:
+            print(f"{deck}\n")
+            deck_words = get_words_from_deck(deck)
+            word_counts = check_for_new_words(word_counts, deck_words)
 
-        print(f"Word list file created: {csv_name}")
+    while True:
+        csv_name = input("\nPlease enter the destination filepath for the output CSV file: ")
+        if not Path(csv_name).parent.exists():
+            print("Invalid filepath. Please provide a valid filepath (e.g., /path/to/input.txt).")
+            continue
+        break
+
+    print('\nCreating CSV file...')
+
+    convert_word_list_to_csv(word_counts, csv_name)
+
+    print(f"Word list file created: {csv_name}")
 
 
 if __name__ == '__main__':
