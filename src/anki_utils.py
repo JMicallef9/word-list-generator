@@ -1,9 +1,9 @@
 import requests
 from string import punctuation
 import re
+import html
 
 
-anki_connect_url = "http://localhost:8765"
 
 def get_anki_decks():
     """
@@ -15,6 +15,8 @@ def get_anki_decks():
     Returns:
         list: A list containing the names of all the decks in the user's Anki collection.
     """
+    anki_connect_url = "http://localhost:8765"
+
     payload = {
         "action": "deckNames",
         "version": 6
@@ -32,6 +34,8 @@ def get_words_from_deck(deck_name):
     Returns:
         set: All the unique words appearing on the front or back of the Anki cards in the given deck.
     """
+    anki_connect_url = "http://localhost:8765"
+
     query = f'deck:"{deck_name}"'
 
     notes_payload = {
@@ -41,22 +45,30 @@ def get_words_from_deck(deck_name):
     }
 
     response = requests.post(anki_connect_url, json=notes_payload)
-    note_ids = response.get("result", [])
+    response_json = response.json()
+    note_ids = response_json.get("result", [])
 
     info_payload = {
         "action": "notesInfo",
         "version": 6,
-        "params": {"query": note_ids}
+        "params": {"notes": note_ids}
     }
 
     response = requests.post(anki_connect_url, json=info_payload)
-    notes = response.get("result", [])
+    response_json = response.json()
+    notes = response_json.get("result", [])
 
     word_list = set()
-    punc_chars = punctuation + '¿¡'
+    punc_chars = punctuation + '¿¡♪'
 
     for note in notes:
-        words = note['fields']['Front']['value'].lower().split() + note['fields']['Back']['value'].lower().split()
+        word_string = note['fields']['Front']['value'].lower() + ' ' + note['fields']['Back']['value'].lower()
+ 
+        word_string = re.sub(r'<[^>]+>', ' ', word_string)
+        word_string = html.unescape(word_string)
+
+        words = re.findall(r'\b\w[\w\'-]*\b', word_string, re.UNICODE)
+
         for word in words:
             word = re.sub(rf'^[{punc_chars}]*|[{punc_chars}]*$', '', word)
             if word:
