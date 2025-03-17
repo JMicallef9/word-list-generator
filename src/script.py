@@ -22,7 +22,7 @@ def word_list_generator():
 
     while True:
         if anki_check == 'y':
-            decks = get_anki_decks()
+            decks = get_anki_decks()[1:]
 
             print("\nWhich deck(s) would you like to filter by? Please select one or more options, separated by commas.\n")
 
