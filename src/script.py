@@ -42,16 +42,22 @@ def word_list_generator():
 
     while True:
         csv_name = input("\nPlease enter the destination filepath for the output CSV file: ")
-        if not Path(csv_name).parent.exists():
+
+        path_obj = Path(csv_name)
+
+        if path_obj.suffix.lower() != ".csv":
+            path_obj = path_obj.with_suffix(".csv")
+
+        if not path_obj.parent.exists():
             print("Invalid filepath. Please provide a valid filepath (e.g., /path/to/input.txt).")
             continue
         break
 
     print('\nCreating CSV file...')
 
-    convert_word_list_to_csv(word_counts, csv_name)
+    convert_word_list_to_csv(word_counts, path_obj)
 
-    print(f"Word list file created: {csv_name}")
+    print(f"Word list file created: {path_obj}")
 
 
 if __name__ == '__main__':
