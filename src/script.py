@@ -9,7 +9,7 @@ def word_list_generator():
         file_to_process = input("Enter the filepath of the file you want to process: ").strip()
 
         if not Path(file_to_process).is_file():
-            print("\nInvalid filepath. Please provide a valid filepath (e.g., /path/to/input.txt).")
+            print("\nFile not found. Please provide a valid filepath (e.g., /path/to/input.txt).")
             time.sleep(0.5)
             continue
         
@@ -18,9 +18,9 @@ def word_list_generator():
             print("\nFile processed successfully.")
             break
         except IOError as e:
-            print(f"\n{e}")
+            print(f"\n{e}\nValid file formats include:\n.txt\n.srt\n.md\n")
         except Exception as e:
-            print(f"\nAn unexpected error occurred: {e}")
+            print(f"\nAn unexpected error occurred: {e}\n")
 
     print(f"\nText successfully extracted from the following file: {file_to_process}")
 
