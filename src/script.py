@@ -6,13 +6,21 @@ import time
 
 def word_list_generator():
     while True:
-        file_to_process = input("Enter the filepath of the file you want to process: ")
-        if Path(file_to_process).is_file():
-            break
-        else:
-            print("Invalid filepath. Please provide a valid filepath (e.g., /path/to/input.txt).")
+        file_to_process = input("Enter the filepath of the file you want to process: ").strip()
 
-    text = extract_text_from_file(file_to_process)
+        if not Path(file_to_process).is_file():
+            print("\nInvalid filepath. Please provide a valid filepath (e.g., /path/to/input.txt).")
+            time.sleep(0.5)
+            continue
+        
+        try:
+            text = extract_text_from_file(file_to_process)
+            print("\nFile processed successfully.")
+            break
+        except IOError as e:
+            print(f"\n{e}")
+        except Exception as e:
+            print(f"\nAn unexpected error occurred: {e}")
 
     print(f"\nText successfully extracted from the following file: {file_to_process}")
 
