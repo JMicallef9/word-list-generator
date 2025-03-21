@@ -6,7 +6,7 @@ import time
 
 def word_list_generator():
     while True:
-        file_to_process = input("Enter the filepath of the file you want to process: ").strip()
+        file_to_process = input("Enter the filepath of the file you want to process: ").strip().strip('"').strip("'")
 
         if not Path(file_to_process).is_file():
             print("\nFile not found. Please provide a valid filepath (e.g., /path/to/input.txt).")
