@@ -107,6 +107,15 @@ def convert_word_list_to_csv_with_translations(words, filepath, input_lang, targ
             writer.writerow([f"{word}: {count}", translation])
     
 def get_user_language(test_inputs=None):
+    """
+    Obtains user-specified language for translation purposes.
+
+    Args:
+        test_inputs (list): A list of test inputs representing languages (optional).
+    
+    Returns:
+        str: A two-letter code representing the user-specified language.
+    """
     valid_languages = GoogleTranslator().get_supported_languages(as_dict=True)
 
     if test_inputs:
