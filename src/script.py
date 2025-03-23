@@ -1,3 +1,22 @@
+"""
+Script for extracting words from a text file, filtering them using an Anki deck (optional), and exporting the word list to a CSV file.
+
+Usage:
+    Run the script and follow the prompts to:
+    - Provide a file containing text (.txt, .srt, .md)
+    - Optionally filter words using an Anki deck
+    - Export the processed word list to a CSV file
+
+Dependencies:
+    - utils.py (contains text extraction and word list generation functions)
+    - anki_utils.py (handles interaction with Anki)
+    - pathlib (for file path handling)
+
+Example:
+    $ python script.py
+"""
+
+
 from utils import extract_text_from_file, generate_word_list, check_for_new_words, get_user_language, convert_word_list_to_csv
 from anki_utils import get_anki_decks, get_words_from_deck
 from pathlib import Path
@@ -5,6 +24,7 @@ import time
 
 
 def word_list_generator():
+    """Runs the interactive word list generation process."""
     while True:
         file_to_process = input("Enter the filepath of the file you want to process: ").strip().strip('"').strip("'")
 
