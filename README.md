@@ -25,3 +25,7 @@ You will be prompted to provide a file to be processed. You can enter either an 
 The script will ask you whether you want to filter the resulting word list via Anki decks. If this option is selected, then any words appearing anywhere in a given Anki deck will be removed from the word list. To use this feature, make sure you have Anki installed and that it includes the AnkiConnect add-on. The add-on can be installed by selecting Tools > Add-ons > Browse & Install in Anki, and inputting 2055492159 in the text box labelled Code.
 
 Finally, the script will ask for a filename for the output word list file. This file will always be provided in .csv format.
+
+## Notes
+
+There is another script in the repository: script_with_translations.py. The purpose of this script is to provide word lists with translations in a user-specified language. This script is not yet complete and is a work in progress.
