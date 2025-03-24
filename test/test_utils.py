@@ -145,12 +145,16 @@ class TestGenerateWordList:
         assert generate_word_list(text) == {'hello': 1, 'first': 1, 'second': 1, 'físico-químico': 1}
 
 class TestConvertToCSVWithTranslations:
+    """Tests for the convert_word_list_to_csv_with_translations() function in utils.py."""
+
     def test_creates_csv_file(self, example_csv):
+        """Should create a CSV file from the word list."""
         input = {'hello': 1}
         convert_word_list_to_csv_with_translations(input, example_csv, "en", "de")
         assert example_csv.exists()
     
     def test_converts_single_key_value_pair_to_csv(self, example_csv):
+        """Should correctly write a single word-frequency pair to the CSV file."""
         input = {'hello': 1}
         convert_word_list_to_csv_with_translations(input, example_csv, "en", "de")
         with open(example_csv, newline="") as file:
@@ -159,6 +163,7 @@ class TestConvertToCSVWithTranslations:
             assert first_row[0] == 'hello: 1'
     
     def test_sorts_and_converts_multiple_key_value_pairs(self, example_csv):
+        """Should sort words alphabetically and write them to the CSV file."""
         input = {'hello': 1, 'world': 1, 'abacus': 1}
         convert_word_list_to_csv_with_translations(input, example_csv, "en", "de")
         with open(example_csv, newline="") as file:
@@ -168,6 +173,7 @@ class TestConvertToCSVWithTranslations:
             assert next(reader)[0] == 'world: 1'
 
     def test_adds_translation_to_single_key_value_pair(self, example_csv):
+        """Should correctly add translations for a single word."""
         input = {'hello': 1}
         convert_word_list_to_csv_with_translations(input, example_csv, "en", "fr")
         with open(example_csv, newline="") as file:
@@ -177,6 +183,7 @@ class TestConvertToCSVWithTranslations:
             assert first_row[1].lower() == 'bonjour'
     
     def test_adds_translations_for_multiple_words(self, example_csv):
+        """Should correctly add translations for multiple words."""
         input = {'hello': 1, 'world': 1, 'abacus': 1}
         convert_word_list_to_csv_with_translations(input, example_csv, "en", "fr")
         with open(example_csv, newline="") as file:
@@ -192,41 +199,53 @@ class TestConvertToCSVWithTranslations:
             assert third_row[1].lower() == 'monde'
 
 class TestCheckForNewWords:
+    """Tests for the check_for_new_words() function."""
+
     def test_returns_new_dict(self):
+        """Should return a new dictionary object instead of modifying the original."""
         input_dict = {'hello': 1}
         input_set = {'word'}
         output = check_for_new_words(input_dict, input_set)
         assert output is not input_dict
     
     def test_dict_unchanged_if_set_contains_no_matches(self):
+        """Should return the same dictionary if no words from the set match."""
         input_dict = {'hello': 1}
         input_set = {'word'}
         output = check_for_new_words(input_dict, input_set)
         assert output == {'hello': 1}
     
     def test_dict_item_removed_if_match_found(self):
+        """Should remove matching words from the dictionary."""
         input_dict = {'hello': 1, 'world': 1}
         input_set = {'world'}
         assert check_for_new_words(input_dict, input_set) == {'hello': 1}
 
 class TestGetUserLanguage:
+    """Tests for the get_user_language() function."""
+
     def test_returns_language_code_entered_by_user(self):
+        """Should return the same language code if a valid code is entered."""
         assert get_user_language(['es']) == 'es'
     
     def test_returns_language_code_if_user_enters_language_name(self):
+        """Should return the same language code if a valid code is entered."""
         assert get_user_language(['spanish']) == 'es'
     
     def test_ignores_capitalisation(self):
+        """Should handle capitalised or uppercase language names correctly."""
         assert get_user_language(['Spanish']) == 'es'
         assert get_user_language(['ES']) == 'es'
         assert get_user_language(['SPANISH']) == 'es'
     
     def test_handles_invalid_input_followed_by_valid_input(self, capsys):
+        """Should prompt again if invalid input is given, then accept valid input."""
         assert get_user_language(['invalid', 'French']) == 'fr'
         captured = capsys.readouterr()
         assert "Invalid input." in captured.out
     
     def test_available_languages_printed_upon_user_request(self, capsys):
+        """Should print a list of available languages when requested."""
         assert get_user_language(['l', 'French']) == 'fr'
         captured = capsys.readouterr()
         assert "Available languages: " in captured.out
@@ -235,12 +254,16 @@ class TestGetUserLanguage:
     
 
 class TestConvertToCSV:
+    """Tests for the convert_word_list_to_csv() function."""
+    
     def test_creates_csv_file(self, example_csv):
+        """Should create a CSV file at the specified path."""
         input = {'hello': 1}
         convert_word_list_to_csv(input, example_csv)
         assert example_csv.exists()
     
     def test_converts_single_key_value_pair_to_csv(self, example_csv):
+        """Should correctly write a single word-count pair to the CSV file."""
         input = {'hello': 1}
         convert_word_list_to_csv(input, example_csv)
         with open(example_csv, newline="") as file:
@@ -250,6 +273,7 @@ class TestConvertToCSV:
             assert int(first_row[1]) == 1
     
     def test_sorts_and_converts_multiple_key_value_pairs(self, example_csv):
+        """Should correctly write and sort multiple word-count pairs in the CSV file."""
         input = {'hello': 1, 'world': 1, 'abacus': 1}
         convert_word_list_to_csv(input, example_csv)
         with open(example_csv, newline="") as file:
