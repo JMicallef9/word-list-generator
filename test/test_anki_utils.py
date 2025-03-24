@@ -29,41 +29,48 @@ def mock_anki_post():
 
 @patch("requests.post")
 class TestGetAnkiDecks:
+    """Tests for fetching deck names from Anki."""
+
     def test_returns_list_of_decks(self, mock_post):
+        """Deck names should match expected output."""
         mock_post.return_value.json.return_value = {'result': ['DeckA', 'DeckB'], 'error': None}
         output = get_anki_decks()
         assert isinstance(output, list)
         assert output == ['DeckA', 'DeckB']
     
     def test_returns_empty_list_if_no_decks(self, mock_post):
+        """Should return empty list if no decks exist."""
         mock_post.return_value.json.return_value = {'result': [], 'error': None}
         output = get_anki_decks()
         assert isinstance(output, list)
         assert output == []
     
     def test_empty_list_returned_if_error_response(self, mock_post):
+        """Should return empty list when Anki API returns an error."""
         mock_post.return_value.json.return_value = {'result': None, 'error': 'An error occurred.'}
         output = get_anki_decks()
         assert not output
 
 class TestGetWordsFromDeck:
+    """Tests for extracting words from an Anki deck."""
+
     def test_returns_set(self, mock_anki_post):
+        """Output should be a set."""
         output = get_words_from_deck('deck_name')
         assert isinstance(output, set)
     
-    def test_front_words_included_in_set(self, mock_anki_post):
+    def test_front_and_back_words_included_in_set(self, mock_anki_post):
+        """Should include words from both front and back fields."""
         output = get_words_from_deck('deck_name')
-        assert 'front' in output
-    
-    def test_back_words_included_in_set(self, mock_anki_post):
-        output = get_words_from_deck('deck_name')
-        assert 'back' in output
+        assert 'front' in output and 'back' in output
     
     def test_all_words_included_in_set(self, mock_anki_post):
+        """Should include all extracted words in the output set."""
         output = get_words_from_deck('deck_name')
         assert output == {'front', 'back', 'content'}
     
     def test_capitalisation_ignored_in_output(self):
+        """Should ignore capitalisation producing the output set."""
         with patch("requests.post") as mock_post:
             first_response = MagicMock()
             first_response.json.return_value = {
@@ -90,6 +97,7 @@ class TestGetWordsFromDeck:
             assert output == {'hello'}
     
     def test_punctuation_ignored_in_output(self):
+        """Should ignore punctuation when producing output set."""
         with patch("requests.post") as mock_post:
             first_response = MagicMock()
             first_response.json.return_value = {
@@ -117,6 +125,7 @@ class TestGetWordsFromDeck:
         
     
     def test_Spanish_punctuation_ignored_in_output(self):
+        """Should ignore rare or Spanish-specific punctuation in output set."""
         with patch("requests.post") as mock_post:
             first_response = MagicMock()
             first_response.json.return_value = {
@@ -144,6 +153,7 @@ class TestGetWordsFromDeck:
         
     
     def test_maintains_hyphenation_in_compound_words(self):
+        """Should ensure that hyphenated words are unchanged."""
         with patch("requests.post") as mock_post:
             first_response = MagicMock()
             first_response.json.return_value = {
@@ -170,6 +180,7 @@ class TestGetWordsFromDeck:
             assert output == {'físico-químico', 'test'}
         
     def test_compiles_set_from_multiple_cards(self):
+        """Ensures that words from multiple Anki cards are compiled into one set."""
         with patch("requests.post") as mock_post:
             first_response = MagicMock()
             first_response.json.return_value = {
@@ -205,6 +216,7 @@ class TestGetWordsFromDeck:
 
 
     def test_multiple_punctuation_characters_ignored_in_output(self):
+        """Ensures that all punctuation characters are omitted from output set."""
         with patch("requests.post") as mock_post:
             first_response = MagicMock()
             first_response.json.return_value = {
@@ -232,6 +244,7 @@ class TestGetWordsFromDeck:
     
 
     def test_strips_out_html_tags(self):
+        """Ensures that all HTML tags are stripped from extracted words."""
         with patch("requests.post") as mock_post:
             first_response = MagicMock()
             first_response.json.return_value = {
