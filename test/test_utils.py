@@ -1,4 +1,4 @@
-from src.utils import extract_text_from_file, generate_word_list, convert_word_list_to_csv_with_translations, check_for_new_words, get_user_language, convert_word_list_to_csv
+from src.utils import extract_text_from_file, generate_word_list, convert_word_list_to_csv_with_translations, check_for_new_words, get_user_language, convert_word_list_to_csv, extract_file_list
 import pytest
 import csv
 
@@ -20,6 +20,11 @@ def example_text():
     """Returns an example text block for test cases."""
     example_text = '''Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus non eros id mi volutpat faucibus. Donec id nulla non nunc iaculis egestas id vestibulum ligula. Duis auctor massa cursus volutpat venenatis. In hac habitasse platea dictumst. Aliquam sit amet laoreet dui, lobortis fermentum neque. Ut quis semper massa, a blandit quam. Duis in laoreet quam, vel facilisis orci. Aliquam at lorem non ligula gravida rhoncus. In eu suscipit lectus. Suspendisse potenti. Duis porta libero orci, id lacinia libero finibus sit amet. Donec nec magna ut ex hendrerit suscipit. In enim quam, aliquam a orci quis, volutpat vestibulum urna. Integer euismod nec diam ac congue. In sit amet sem tortor.'''
     return example_text
+
+@pytest.fixture
+def file_extensions():
+    """Creates a list of valid file extensions."""
+    return ['.srt', '.txt', '.md']
 
 class TestExtractTextFromFile:
     """Tests for the extract_text_from_file() function in utils.py"""
@@ -287,3 +292,48 @@ class TestConvertToCSV:
             third_row = next(reader)
             assert third_row[0] == 'world'
             assert int(third_row[1]) == 1
+    
+class TestExtractFileList:
+
+    def test_extracts_single_file_from_directory(self, file_extensions, tmp_path):
+        """Should correctly extract a valid file from a directory."""
+        file = tmp_path / "file.txt"
+        file.write_text("test")
+        assert extract_file_list(tmp_path, file_extensions) == ["file.txt"]
+
+    def test_extracts_multiple_files_from_directory(self, file_extensions, tmp_path):
+        """Should correctly extract valid files from a directory."""
+        file1 = tmp_path / "file1.txt"
+        file1.write_text("test1")
+        file2 = tmp_path / "file2.srt"
+        file2.write_text("test2")
+        assert extract_file_list(tmp_path, file_extensions) == ["file1.txt", "file2.srt"]
+    
+    def test_ignores_files_with_invalid_formats(self, file_extensions, tmp_path):
+        """Should return an empty list if file formats are invalid."""
+        file1 = tmp_path / "file1.pdf"
+        file1.write_text("test")
+        assert extract_file_list(tmp_path, file_extensions) == []
+    
+    def test_handles_mixture_of_valid_and_invalid_files(self, file_extensions, tmp_path):
+        """Should save valid files to the list while ignoring invalid files."""
+        file1 = tmp_path / "file1.pdf"
+        file1.write_text("test1")
+        file2 = tmp_path / "file2.srt"
+        file2.write_text("test2")
+        assert extract_file_list(tmp_path, file_extensions) == ["file2.srt"]
+
+    def test_raises_error_if_invalid_directory(self, file_extensions, tmp_path):
+        """Should raise error if an invalid directory is given."""
+
+        with pytest.raises(ValueError) as err:
+            extract_file_list("hello", file_extensions)
+        assert str(err.value) == f"Invalid directory: hello"
+
+
+
+
+
+        
+
+
