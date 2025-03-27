@@ -23,12 +23,13 @@ from pathlib import Path
 import time
 import sys
 
-
 def word_list_generator():
     """Runs the interactive word list generation process."""
     file_texts = []
+    valid_extensions = ['.srt', '.txt', '.md']
+    
     while True:
-        path_input = input("Enter a file or directory path that you wish to process, or press A to continue: ").strip().strip('"').strip("'")
+        path_input = input("Enter a new file or directory path that you wish to process, or press A to continue: ").strip().strip('"').strip("'")
 
         if path_input.lower() == 'a':
             break
@@ -36,7 +37,7 @@ def word_list_generator():
         path = Path(path_input)
 
         if path.is_dir():
-            files = extract_file_list(path_input)
+            files = extract_file_list(path_input, valid_extensions)
             if not files:
                 print("\nNo valid files found in directory. Please try again.")
                 continue
@@ -61,7 +62,7 @@ def word_list_generator():
                 print(f"\nAn unexpected error occurred: {e}\n")
             
 
-        if not Path(path_input).is_file():
+        else:
             print("\nFile not found. Please provide a valid filepath (e.g., /path/to/input.txt).")
             time.sleep(0.5)
             continue
