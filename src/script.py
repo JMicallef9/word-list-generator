@@ -17,34 +17,64 @@ Example:
 """
 
 
-from utils import extract_text_from_file, generate_word_list, check_for_new_words, get_user_language, convert_word_list_to_csv
+from utils import extract_text_from_file, generate_word_list, check_for_new_words, get_user_language, convert_word_list_to_csv, extract_file_list
 from anki_utils import get_anki_decks, get_words_from_deck
 from pathlib import Path
 import time
+import sys
 
 
 def word_list_generator():
     """Runs the interactive word list generation process."""
+    file_texts = []
     while True:
-        file_to_process = input("Enter the filepath of the file you want to process: ").strip().strip('"').strip("'")
+        path_input = input("Enter a file or directory path that you wish to process, or press A to continue: ").strip().strip('"').strip("'")
 
-        if not Path(file_to_process).is_file():
+        if path_input.lower() == 'a':
+            break
+
+        path = Path(path_input)
+
+        if path.is_dir():
+            files = extract_file_list(path_input)
+            if not files:
+                print("\nNo valid files found in directory. Please try again.")
+                continue
+            print(f"\nProcessing {len(files)} files from the following directory: {path_input}")
+            for file in files:
+                try:
+                    text = extract_text_from_file(file)
+                    file_texts.append(text)
+                    print(f"Processed file: {file}")
+                except Exception as e:
+                    print(f"Error processing {file}: {e}")
+        
+        elif path.is_file():
+            try:
+                text = extract_text_from_file(path_input)
+                file_texts.append(text)
+                print(f"\nFile processed successfully: {path_input}. To add text from another file to the word list, enter another filepath.")
+                continue
+            except IOError as e:
+                print(f"\n{e}\nValid file formats include:\n.txt\n.srt\n.md\n")
+            except Exception as e:
+                print(f"\nAn unexpected error occurred: {e}\n")
+            
+
+        if not Path(path_input).is_file():
             print("\nFile not found. Please provide a valid filepath (e.g., /path/to/input.txt).")
             time.sleep(0.5)
             continue
         
-        try:
-            text = extract_text_from_file(file_to_process)
-            print("\nFile processed successfully.")
-            break
-        except IOError as e:
-            print(f"\n{e}\nValid file formats include:\n.txt\n.srt\n.md\n")
-        except Exception as e:
-            print(f"\nAn unexpected error occurred: {e}\n")
 
-    print(f"\nText successfully extracted from the following file: {file_to_process}")
+    if file_texts:
+        combined_text = "".join(file_texts)
+        print("\nText successfully extracted.")
+    else:
+        print("\nNo valid files were processed.")
+        sys.exit()
 
-    word_counts = generate_word_list(text)
+    word_counts = generate_word_list(combined_text)
 
     anki_check = input("\nDo you want to filter the word list using an Anki deck? (Y/n): ").strip().lower()
 
