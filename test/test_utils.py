@@ -299,7 +299,7 @@ class TestExtractFileList:
         """Should correctly extract a valid file from a directory."""
         file = tmp_path / "file.txt"
         file.write_text("test")
-        assert extract_file_list(tmp_path, file_extensions) == ["file.txt"]
+        assert extract_file_list(tmp_path, file_extensions) == [file]
 
     def test_extracts_multiple_files_from_directory(self, file_extensions, tmp_path):
         """Should correctly extract valid files from a directory."""
@@ -307,7 +307,7 @@ class TestExtractFileList:
         file1.write_text("test1")
         file2 = tmp_path / "file2.srt"
         file2.write_text("test2")
-        assert extract_file_list(tmp_path, file_extensions) == ["file1.txt", "file2.srt"]
+        assert extract_file_list(tmp_path, file_extensions) == [file1, file2]
     
     def test_ignores_files_with_invalid_formats(self, file_extensions, tmp_path):
         """Should return an empty list if file formats are invalid."""
@@ -321,14 +321,21 @@ class TestExtractFileList:
         file1.write_text("test1")
         file2 = tmp_path / "file2.srt"
         file2.write_text("test2")
-        assert extract_file_list(tmp_path, file_extensions) == ["file2.srt"]
+        assert extract_file_list(tmp_path, file_extensions) == [file2]
 
-    def test_raises_error_if_invalid_directory(self, file_extensions, tmp_path):
+    def test_raises_error_if_invalid_directory(self, file_extensions):
         """Should raise error if an invalid directory is given."""
-
         with pytest.raises(ValueError) as err:
             extract_file_list("hello", file_extensions)
         assert str(err.value) == f"Invalid directory: hello"
+    
+    def test_locates_file_in_subfolder(self, file_extensions, tmp_path):
+        """Should correctly identify file located in a subfolder of the given directory."""
+        subfolder = tmp_path / "files"
+        subfolder.mkdir()
+        file1 = subfolder / "test_file.txt"
+        file1.write_text("test")
+        assert extract_file_list(tmp_path, file_extensions)
 
 
 
