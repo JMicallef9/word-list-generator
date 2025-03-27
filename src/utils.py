@@ -156,3 +156,23 @@ def convert_word_list_to_csv(words, filepath):
         for word, count in sorted_words:
             if word:
                 writer.writerow([word, count])
+    
+def extract_file_list(dir, exts):
+    """
+    Extracts a list of files in a directory that match a list of extensions.
+
+    Args:
+        dir (str): A directory path.
+        exts (list): A list of file extensions.
+    
+    Returns:
+        list: A list of filepaths.
+    """
+    path = Path(dir)
+    
+    if not path.is_dir():
+        raise ValueError(f"Invalid directory: {dir}")
+
+    files = [file for file in path.glob("**/*") if file.suffix in exts]
+    return files
+
