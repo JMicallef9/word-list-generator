@@ -94,6 +94,14 @@ class TestExtractTextFromFile:
         output = extract_text_from_file(example_srt)
         assert not example_srt.read_text()
         assert not output
+    
+    def test_handles_md_files(self, tmp_path):
+        """Checks that md file can be successfully processed."""
+        example_md = tmp_path / 'example.md'
+        example_md.write_text("example text")
+        assert extract_text_from_file(example_md) == "example text"
+
+
         
 class TestGenerateWordList:
     """Tests for the generate_word_list() function in utils.py."""
