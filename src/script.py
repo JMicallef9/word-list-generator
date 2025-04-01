@@ -123,7 +123,7 @@ def word_list_generator():
     while True:
         csv_name = input("\nPlease enter the destination filepath for the output CSV file, or press A to save the file in the original directory: ")
 
-        if csv_name.lower() == "a":
+        if csv_name.lower() == "a" or not csv_name:
             csv_path_obj = path.with_suffix('.csv')
             break
 
@@ -132,8 +132,9 @@ def word_list_generator():
         if csv_path_obj.suffix.lower() != ".csv":
             csv_path_obj = csv_path_obj.with_suffix(".csv")
 
-        if not csv_path_obj.parent.exists():
+        if not csv_path_obj.parent.exists() or not csv_path_obj.parent.is_dir():
             print("Invalid filepath provided. File will be saved to original directory.")
+            csv_path_obj = path.parent / csv_path_obj.name
         break
 
     print('\nCreating CSV file...')
