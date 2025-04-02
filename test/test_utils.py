@@ -100,6 +100,18 @@ class TestExtractTextFromFile:
         example_md = tmp_path / 'example.md'
         example_md.write_text("example text")
         assert extract_text_from_file(example_md) == "example text"
+    
+    def test_handles_docx_files(self, tmp_path):
+        """Checks that docx files can be successfully processed."""
+        example_docx = tmp_path / 'example.docx'
+        example_docx.write_text("here is some text")
+        assert extract_text_from_file(example_docx) == "here is some text"
+    
+    def test_handles_pdf_files(self, tmp_path):
+        """Checks that pdf files can be successfully processed."""
+        example_pdf = tmp_path / 'example.pdf'
+        example_pdf.write_text("here is some text")
+        assert extract_text_from_file(example_pdf) == "here is some text"      
 
 
         

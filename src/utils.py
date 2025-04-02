@@ -18,7 +18,7 @@ def extract_text_from_file(filepath):
     Returns:
         str: The text from the given file, with timestamps and formatting removed.
     """
-    valid_formats = ['.srt', '.txt', '.md']
+    valid_formats = ['.srt', '.txt', '.md', '.docx', '.pdf']
 
     filepath = Path(filepath)
 

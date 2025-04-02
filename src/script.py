@@ -26,7 +26,7 @@ import sys
 def word_list_generator():
     """Runs the interactive word list generation process."""
     file_texts = []
-    valid_extensions = ['.srt', '.txt', '.md']
+    valid_extensions = ['.srt', '.txt', '.md', '.docx']
     
     while True:
         path_input = input("Enter a new file or directory path that you wish to process, or press A to continue: ").strip().strip('"').strip("'")
