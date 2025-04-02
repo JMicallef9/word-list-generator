@@ -5,6 +5,7 @@ from string import punctuation
 import csv
 from deep_translator import GoogleTranslator
 import unicodedata
+import docx
 
 
 
@@ -27,14 +28,18 @@ def extract_text_from_file(filepath):
     
     if not any(filepath.suffix == ext for ext in valid_formats):
         raise IOError(f"Error: Could not read the file contents of '{filepath.name}'. File format is invalid.")
-    
+
     try:
         timestamp_pattern = r'\d+\s+\d{2}:\d{2}:\d{2},\d{3} --> \d{2}:\d{2}:\d{2},\d{3}\s*'
         tag_pattern = r'<.*?>'
         combined_pattern = rf"{timestamp_pattern}|{tag_pattern}"
 
-        with open(filepath) as f:
-            text = f.read()
+        if filepath.suffix == '.docx':
+            doc = docx.Document(filepath)
+            text = '\n'.join([p.text for p in doc.paragraphs])
+        else:
+            with open(filepath) as f:
+                text = f.read()
             
         cleaned_text = re.sub(combined_pattern, "", text)
         cleaned_text = re.sub(r'[\u200B\u200C\u200D\u2060\uFEFF]', '', cleaned_text)
