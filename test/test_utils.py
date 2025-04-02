@@ -1,6 +1,7 @@
 from src.utils import extract_text_from_file, generate_word_list, convert_word_list_to_csv_with_translations, check_for_new_words, get_user_language, convert_word_list_to_csv, extract_file_list
 import pytest
 import csv
+from docx import Document
 
 
 @pytest.fixture
@@ -104,7 +105,9 @@ class TestExtractTextFromFile:
     def test_handles_docx_files(self, tmp_path):
         """Checks that docx files can be successfully processed."""
         example_docx = tmp_path / 'example.docx'
-        example_docx.write_text("here is some text")
+        doc = Document()
+        doc.add_paragraph("here is some text")
+        doc.save(example_docx)
         assert extract_text_from_file(example_docx) == "here is some text"
     
     def test_handles_pdf_files(self, tmp_path):
