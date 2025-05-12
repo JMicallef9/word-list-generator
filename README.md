@@ -2,7 +2,7 @@
 
 A script that extracts all unique words from a text file and saves an alphabetical list of the words to a .csv file.
 
-Possible file formats that can be processed: .txt, .srt & .md
+Possible file formats that can be processed: .txt, .srt, .md, .docx, .pdf
 
 Also includes optional filtering using Anki decks.
 
