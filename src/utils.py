@@ -6,7 +6,7 @@ import csv
 from deep_translator import GoogleTranslator
 import unicodedata
 import docx
-
+from pypdf import PdfReader
 
 
 def extract_text_from_file(filepath):
@@ -14,7 +14,7 @@ def extract_text_from_file(filepath):
     Removes timestamps and formatting from SRT subtitle files.
     
     Args:
-        filepath (str): The path to a .txt or .srt file.
+        filepath (str): The path to a file containing some text.
     
     Returns:
         str: The text from the given file, with timestamps and formatting removed.
@@ -37,6 +37,13 @@ def extract_text_from_file(filepath):
         if filepath.suffix == '.docx':
             doc = docx.Document(filepath)
             text = '\n'.join([p.text for p in doc.paragraphs])
+
+        elif filepath.suffix == '.pdf':
+            pdf_reader = PdfReader(filepath)
+            text = ""
+            for page in pdf_reader.pages:
+                text += page.extract_text()
+
         else:
             with open(filepath) as f:
                 text = f.read()
