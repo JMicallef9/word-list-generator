@@ -2,6 +2,7 @@ from src.utils import extract_text_from_file, generate_word_list, convert_word_l
 import pytest
 import csv
 from docx import Document
+from reportlab.pdfgen.canvas import Canvas
 
 
 @pytest.fixture
@@ -120,10 +121,17 @@ class TestExtractTextFromFile:
     
     def test_handles_pdf_files(self, tmp_path):
         """Checks that pdf files can be successfully processed."""
-        example_pdf = tmp_path / 'example.pdf'
-        example_pdf.write_text("here is some text")
-        assert extract_text_from_file(example_pdf) == "here is some text"      
 
+        def create_pdf(pdf_path, text):
+            file = Canvas(str(pdf_path))
+            file.drawString(50, 50, text)
+            file.save()
+
+        example_text = "here is some text"
+        test_pdf = tmp_path / 'example.pdf'
+        create_pdf(test_pdf, example_text)
+
+        assert example_text in extract_text_from_file(test_pdf)
 
         
 class TestGenerateWordList:
@@ -367,11 +375,3 @@ class TestExtractFileList:
         file1 = subfolder / "test_file.txt"
         file1.write_text("test")
         assert extract_file_list(tmp_path, file_extensions)
-
-
-
-
-
-        
-
-
