@@ -110,6 +110,14 @@ class TestExtractTextFromFile:
         doc.save(example_docx)
         assert extract_text_from_file(example_docx) == "here is some text"
     
+    def test_removes_unwanted_formatting_from_docx_files(self, tmp_path):
+        """Checks that unwanted formatting artifacts are removed from docx files."""
+        example_docx = tmp_path / 'example.docx'
+        doc = Document()
+        doc.add_paragraph(r"here is \an8}some text")
+        doc.save(example_docx)
+        assert extract_text_from_file(example_docx) == "here is some text"
+    
     def test_handles_pdf_files(self, tmp_path):
         """Checks that pdf files can be successfully processed."""
         example_pdf = tmp_path / 'example.pdf'

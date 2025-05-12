@@ -43,6 +43,7 @@ def extract_text_from_file(filepath):
             
         cleaned_text = re.sub(combined_pattern, "", text)
         cleaned_text = re.sub(r'[\u200B\u200C\u200D\u2060\uFEFF]', '', cleaned_text)
+        cleaned_text = re.sub(r'\\an8}', '', cleaned_text)
         cleaned_text = unicodedata.normalize("NFC", cleaned_text)
 
         return cleaned_text
