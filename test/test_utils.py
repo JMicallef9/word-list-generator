@@ -1,7 +1,7 @@
 from src.utils import extract_text_from_file, generate_word_list, convert_word_list_to_csv_with_translations, check_for_new_words, get_user_language, convert_word_list_to_csv, extract_file_list
 import pytest
 import csv
-from docx import Document
+import docx
 from reportlab.pdfgen.canvas import Canvas
 
 
@@ -106,7 +106,7 @@ class TestExtractTextFromFile:
     def test_handles_docx_files(self, tmp_path):
         """Checks that docx files can be successfully processed."""
         example_docx = tmp_path / 'example.docx'
-        doc = Document()
+        doc = docx.Document()
         doc.add_paragraph("here is some text")
         doc.save(example_docx)
         assert extract_text_from_file(example_docx) == "here is some text"
@@ -114,7 +114,7 @@ class TestExtractTextFromFile:
     def test_removes_unwanted_formatting_from_docx_files(self, tmp_path):
         """Checks that unwanted formatting artifacts are removed from docx files."""
         example_docx = tmp_path / 'example.docx'
-        doc = Document()
+        doc = docx.Document()
         doc.add_paragraph(r"here is \an8}some text")
         doc.save(example_docx)
         assert extract_text_from_file(example_docx) == "here is some text"
@@ -124,7 +124,7 @@ class TestExtractTextFromFile:
 
         def create_pdf(pdf_path, text):
             file = Canvas(str(pdf_path))
-            file.drawString(50, 50, text)
+            file.drawString(72, 72, text)
             file.save()
 
         example_text = "here is some text"
