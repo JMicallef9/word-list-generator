@@ -7,6 +7,8 @@ from deep_translator import GoogleTranslator
 import unicodedata
 import docx
 from pypdf import PdfReader
+from bs4 import BeautifulSoup
+import requests
 
 
 def extract_text_from_file(filepath):
@@ -189,3 +191,17 @@ def extract_file_list(dir, exts):
     files = [file for file in path.glob("**/*") if file.suffix in exts]
     return files
 
+def extract_text_from_url(url):
+    try:
+        response = requests.get(url, timeout=10)
+        content = BeautifulSoup(response.content, "html.parser")
+        print(content.prettify())
+
+        for element in content(['script', 'style', 'noscript']):
+            element.decompose()
+        
+        text = content.get_text(separator=' ', strip=True)
+        return text
+
+    except requests.RequestException:
+        raise ValueError("Text extraction failed. URL may be invalid.")
