@@ -195,7 +195,6 @@ def extract_text_from_url(url):
     try:
         response = requests.get(url, timeout=10)
         content = BeautifulSoup(response.content, "html.parser")
-        print(content.prettify())
 
         for element in content(['script', 'style', 'noscript']):
             element.decompose()
