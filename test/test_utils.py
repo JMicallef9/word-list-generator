@@ -1,8 +1,10 @@
-from src.utils import extract_text_from_file, generate_word_list, convert_word_list_to_csv_with_translations, check_for_new_words, get_user_language, convert_word_list_to_csv, extract_file_list
+from src.utils import extract_text_from_file, generate_word_list, convert_word_list_to_csv_with_translations, check_for_new_words, get_user_language, convert_word_list_to_csv, extract_file_list, extract_text_from_url
 import pytest
 import csv
 import docx
 from reportlab.pdfgen.canvas import Canvas
+from unittest.mock import patch, Mock
+import requests
 
 
 @pytest.fixture
@@ -375,3 +377,64 @@ class TestExtractFileList:
         file1 = subfolder / "test_file.txt"
         file1.write_text("test")
         assert extract_file_list(tmp_path, file_extensions)
+
+@pytest.fixture
+def mock_get_request():
+    """Creates a test response body."""
+    with patch("requests.get") as mock_get:
+        mock_response = Mock()
+        mock_response.content = b"""
+        <html>
+            <body>
+                <article class="ssrcss-z9afcx-ArticleWrapper e1nh2i2l3">
+                    <header data-component="headline-block" class="ssrcss-bwbna7-ComponentWrapper-HeadlineComponentWrapper egtrm1f0">
+                        <h1 id="main-heading" type="headline" tabindex="-1" class="ssrcss-1s9pby4-Heading e10rt3ze0">
+                            <span role="text">
+                                Reeves says UK beginning to turn corner as growth beats forecasts
+                            </span>
+                        </h1>
+                    </header>
+                    <div class="ssrcss-1w03aro-RichTextComponentWrapper ep2nwvo0">
+                        <p class="ssrcss-1q0x1qg-Paragraph ejhz7w10">
+                            <b>The growth figure was stronger than</b>
+                        </p>
+                        <p class="ssrcss-1q0x1qg-Paragraph ejhz7w10">
+                            Liberal Democrat Treasury spokesperson
+                        </p>
+                        <p class="ssrcss-1q0x1qg-Paragraph ejhz7w10">
+                            predictions are highly volatile
+                        </p>
+                    </div>
+                </article>
+            </body>
+        </html>
+        """
+        mock_get.return_value = mock_response
+        yield mock_get
+
+@pytest.fixture
+def mock_error():
+    """Mocks requests.get to raise an error."""
+    with patch("requests.get") as mock_error:
+        mock_error.side_effect = requests.exceptions.RequestException
+        yield mock_error
+
+
+class TestExtractTextFromUrl:
+
+    """Tests for the extract_text_from_url function."""
+
+    def test_extracts_text_from_url(self, mock_get_request):
+        """Checks body and header are successfully extracted from URL."""
+        output = extract_text_from_url("test")
+        assert "The growth figure was stronger than" in output
+        assert "Liberal Democrat Treasury spokesperson" in output
+        assert "predictions are highly volatile" in output
+        assert "Reeves says UK beginning to turn corner as growth beats forecasts" in output
+
+    def test_raises_value_error_if_request_fails(self, mock_error):
+        """Checks whether error is raised if URL is invalid."""
+
+        with pytest.raises(ValueError) as err:
+            extract_text_from_url("www.invalid-url.com")
+        assert str(err.value) == "Text extraction failed. URL may be invalid."
