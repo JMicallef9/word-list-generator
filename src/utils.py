@@ -71,7 +71,7 @@ def generate_word_list(text):
         dict: A dictionary containing words and the number of times they appear in the text.
     """
     word_freq = defaultdict(int)
-    punc_chars = punctuation + '¿¡♪'
+    punc_chars = punctuation + '¿¡♪«»—'
     if text:
         words = text.lower().split()
         for word in words:
