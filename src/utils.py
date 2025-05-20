@@ -76,8 +76,8 @@ def generate_word_list(text):
         words = text.lower().split()
         for word in words:
             word = re.sub(rf'^[{punc_chars}]*|[{punc_chars}]*$', '', word)
-            if word:
-                word_freq[word] += 1 
+            if word and not word.isnumeric():
+                word_freq[word] += 1
     return word_freq
 
 def check_for_new_words(text_words, anki_words):
