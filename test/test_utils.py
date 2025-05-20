@@ -172,7 +172,7 @@ class TestGenerateWordList:
     
     def test_filters_out_additional_punctuation_characters(self):
         """Should ignore rarer punctuation characters such as tags or Spanish-specific question marks."""
-        text = '''¿Sueles leer antes de dormir? Al principio: <Si trabajas duro, conseguirás lo que quieres.>>'''
+        text = '''¿Sueles leer «antes» de dormir? Al principio: <Si trabajas duro, conseguirás lo que quieres.>>'''
         assert generate_word_list(text) == {'sueles': 1, 'leer': 1, 'antes': 1, 'de': 1, 'dormir': 1, 'al': 1, 'principio': 1, 'si': 1, 'trabajas': 1, 'duro': 1, 'conseguirás': 1, 'lo': 1, 'que': 1, 'quieres': 1}
     
     def test_handles_text_in_cyrillic_script(self):
@@ -437,4 +437,4 @@ class TestExtractTextFromUrl:
 
         with pytest.raises(ValueError) as err:
             extract_text_from_url("www.invalid-url.com")
-        assert str(err.value) == "Text extraction failed. URL may be invalid."
+        assert str(err.value) == "Text extraction failed. URL may be invalid."        
