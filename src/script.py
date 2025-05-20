@@ -39,7 +39,7 @@ def word_list_generator():
         parsed = urlparse(path_input)
         is_url = parsed.scheme in ("http", "https") and parsed.netloc != ""
 
-        if is_url:  
+        if is_url:
             try:
                 text = extract_text_from_url(path_input)
                 file_texts.append(text)
