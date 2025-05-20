@@ -3,7 +3,7 @@ Script for extracting words from a text file, filtering them using an Anki deck 
 
 Usage:
     Run the script and follow the prompts to:
-    - Provide a file containing text (.txt, .srt, .md, .docx, .pdf)
+    - Provide a file containing text (.txt, .srt, .md, .docx, .pdf) or a URL.
     - Optionally filter words using an Anki deck
     - Export the processed word list to a CSV file
 
@@ -17,11 +17,13 @@ Example:
 """
 
 
-from utils import extract_text_from_file, generate_word_list, check_for_new_words, get_user_language, convert_word_list_to_csv, extract_file_list
+from utils import extract_text_from_file, generate_word_list, check_for_new_words, get_user_language, convert_word_list_to_csv, extract_file_list, extract_text_from_url
 from anki_utils import get_anki_decks, get_words_from_deck
 from pathlib import Path
 import time
 import sys
+from urllib.parse import urlparse
+
 
 def word_list_generator():
     """Runs the interactive word list generation process."""
@@ -29,45 +31,62 @@ def word_list_generator():
     valid_extensions = ['.srt', '.txt', '.md', '.docx', '.pdf']
     
     while True:
-        path_input = input("Enter a new file or directory path that you wish to process, or press A to continue: ").strip().strip('"').strip("'")
+        path_input = input("Enter a new file, directory path or URL that you wish to process, or press A to continue: ").strip().strip('"').strip("'")
 
         if path_input.lower() == 'a':
             break
-
-        path = Path(path_input)
-
-        if path.is_dir():
-            files = extract_file_list(path_input, valid_extensions)
-            if not files:
-                print("\nNo valid files found in directory. Please try again.")
-                continue
-            print(f"\nProcessing {len(files)} files from the following directory: {path_input}")
-            for file in files:
-                try:
-                    text = extract_text_from_file(file)
-                    file_texts.append(text)
-                    print(f"Processed file: {file}")
-                except Exception as e:
-                    print(f"Error processing {file}: {e}")
         
-        elif path.is_file():
+        parsed = urlparse(path_input)
+        is_url = parsed.scheme in ("http", "https") and parsed.netloc != ""
+
+        if is_url:  
             try:
-                text = extract_text_from_file(path_input)
+                text = extract_text_from_url(path_input)
                 file_texts.append(text)
-                print(f"\nFile processed successfully: {path_input}. To add text from another file to the word list, enter another filepath.")
+                print(f"\nText processed successfully. To add more text to the word list, enter another URL or filepath.")
+                default_name = Path(parsed.path).stem + ".csv"
+                default_dir = Path.cwd()
                 continue
-            except IOError as e:
-                print(f"\n{e}\nValid file formats include:\n.txt\n.srt\n.md\n")
-            except Exception as e:
-                print(f"\nAn unexpected error occurred: {e}\n")
-            
-
-        else:
-            print("\nFile not found. Please provide a valid filepath (e.g., /path/to/input.txt).")
-            time.sleep(0.5)
-            continue
+            except ValueError:
+                print("\nError. Invalid URL provided.")
+                time.sleep(0.5)
+                continue
         
+        else:
+            path = Path(path_input)
+            default_name = path.stem + ".csv"
+            default_dir = path.parent
 
+            if path.is_dir():
+                files = extract_file_list(path_input, valid_extensions)
+                if not files:
+                    print("\nNo valid files found in directory. Please try again.")
+                    continue
+                print(f"\nProcessing {len(files)} files from the following directory: {path_input}")
+                for file in files:
+                    try:
+                        text = extract_text_from_file(file)
+                        file_texts.append(text)
+                        print(f"Processed file: {file}")
+                    except Exception as e:
+                        print(f"Error processing {file}: {e}")
+            
+            elif path.is_file():
+                try:
+                    text = extract_text_from_file(path_input)
+                    file_texts.append(text)
+                    print(f"\nFile processed successfully: {path_input}. To add text from another file to the word list, enter another filepath.")
+                    continue
+                except IOError as e:
+                    print(f"\n{e}\nValid file formats include:\n.txt\n.srt\n.md\n")
+                except Exception as e:
+                    print(f"\nAn unexpected error occurred: {e}\n")
+
+            else:
+                print("\nFile not found. Please provide a valid filepath (e.g., /path/to/input.txt).")
+                time.sleep(0.5)
+                continue
+        
     if file_texts:
         combined_text = "".join(file_texts)
         print("\nText successfully extracted.")
@@ -124,7 +143,7 @@ def word_list_generator():
         csv_name = input("\nPlease enter the destination filepath for the output CSV file, or press A to save the file in the original directory: ")
 
         if csv_name.lower() == "a" or not csv_name:
-            csv_path_obj = path.with_suffix('.csv')
+            csv_path_obj = default_dir / default_name
             break
 
         csv_path_obj = Path(csv_name)
@@ -134,12 +153,17 @@ def word_list_generator():
 
         if not csv_path_obj.parent.exists() or not csv_path_obj.parent.is_dir():
             print("Invalid filepath provided. File will be saved to original directory.")
-            csv_path_obj = path.parent / csv_path_obj.name
+            csv_path_obj = default_dir / csv_path_obj.name
         break
 
     print('\nCreating CSV file...')
 
-    convert_word_list_to_csv(word_counts, csv_path_obj)
+    try:
+        convert_word_list_to_csv(word_counts, csv_path_obj)
+    except FileNotFoundError:
+        filename = Path.cwd() / csv_path_obj.name
+        convert_word_list_to_csv(word_counts, filename)
+
 
     print(f"Word list file created: {csv_path_obj}")
 
