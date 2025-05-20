@@ -192,13 +192,21 @@ def extract_file_list(dir, exts):
     return files
 
 def extract_text_from_url(url):
+    """
+    Extracts text from a URL, including body and header.
+
+    Args:
+        url (str): The URL of a webpage.
+
+    Returns:
+        str: The text content from the webpage.
+    """
     try:
         response = requests.get(url, timeout=10)
         content = BeautifulSoup(response.content, "html.parser")
 
         for element in content(['script', 'style', 'noscript']):
             element.decompose()
-        
         text = content.get_text(separator=' ', strip=True)
         return text
 
