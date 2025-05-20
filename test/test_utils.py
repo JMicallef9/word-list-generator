@@ -189,6 +189,12 @@ class TestGenerateWordList:
         """Should retain hyphens in compound words."""
         text = '''hello, first, second, físico-químico.'''
         assert generate_word_list(text) == {'hello': 1, 'first': 1, 'second': 1, 'físico-químico': 1}
+    
+    def test_removes_numbers_from_word_list(self):
+        """Should remove numbers from the text."""
+        text = "4 foxes jumped over 2 3-year-old dogs?"
+        assert generate_word_list(text) == {'foxes': 1, 'jumped': 1, 'over': 1, '3-year-old': 1, 'dogs': 1}
+
 
 class TestConvertToCSVWithTranslations:
     """Tests for the convert_word_list_to_csv_with_translations() function in utils.py."""
