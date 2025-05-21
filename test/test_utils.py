@@ -5,6 +5,7 @@ import docx
 from reportlab.pdfgen.canvas import Canvas
 from unittest.mock import patch, Mock
 import requests
+from ebooklib import epub
 
 
 @pytest.fixture
@@ -134,8 +135,32 @@ class TestExtractTextFromFile:
         create_pdf(test_pdf, example_text)
 
         assert example_text in extract_text_from_file(test_pdf)
+    
+    def test_handles_epub_files(self, tmp_path):
+        """Checks that epub files can be successfully processed."""
 
-        
+        epub_path = tmp_path / "example.epub"
+
+        test_epub = epub.EpubBook()
+        chapter1 = epub.EpubHtml(title='Chapter 1', file_name="chap1.xhtml")
+        chapter1.content = "<h1>Chapter 1</h1><p>here is some text</p>"
+
+        chapter2 = epub.EpubHtml(title='Chapter 2', file_name="chap2.xhtml")
+        chapter2.content = "<h1>Chapter 2</h1><p>and now some more text</p>"
+
+        test_epub.add_item(chapter1)
+        test_epub.add_item(chapter2)
+
+        test_epub.spine = ["nav", chapter1, chapter2]
+        test_epub.add_item(epub.EpubNcx())
+        test_epub.add_item(epub.EpubNav())
+
+        epub.write_epub(str(epub_path), test_epub)
+
+        assert "here is some text" in extract_text_from_file(epub_path)       
+        assert "and now some more text" in extract_text_from_file(epub_path)
+
+
 class TestGenerateWordList:
     """Tests for the generate_word_list() function in utils.py."""
 
