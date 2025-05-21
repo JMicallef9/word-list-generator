@@ -3,7 +3,7 @@ Script for extracting words from a text file, filtering them using an Anki deck 
 
 Usage:
     Run the script and follow the prompts to:
-    - Provide a file containing text (.txt, .srt, .md, .docx, .pdf) or a URL.
+    - Provide a file containing text (.txt, .srt, .md, .docx, .pdf, .epub) or a URL.
     - Optionally filter words using an Anki deck
     - Export the processed word list to a CSV file
 
@@ -28,7 +28,7 @@ from urllib.parse import urlparse
 def word_list_generator():
     """Runs the interactive word list generation process."""
     file_texts = []
-    valid_extensions = ['.srt', '.txt', '.md', '.docx', '.pdf']
+    valid_extensions = ['.srt', '.txt', '.md', '.docx', '.pdf', '.epub']
     
     while True:
         path_input = input("Enter a new file, directory path or URL that you wish to process, or press A to continue: ").strip().strip('"').strip("'")
