@@ -62,6 +62,8 @@ def extract_text_from_file(filepath):
         cleaned_text = re.sub(combined_pattern, "", text)
         cleaned_text = re.sub(r'[\u200B\u200C\u200D\u2060\uFEFF]', '', cleaned_text)
         cleaned_text = re.sub(r'\\an8}', '', cleaned_text)
+        cleaned_text = re.sub(r'\d\.\w+(?:\.\w+)?', '', cleaned_text)
+        cleaned_text = re.sub(r'(?<=\w)—(?=\w)', ' ', cleaned_text)
         cleaned_text = unicodedata.normalize("NFC", cleaned_text)
 
         return cleaned_text
@@ -80,7 +82,7 @@ def generate_word_list(text):
         dict: A dictionary containing words and the number of times they appear in the text.
     """
     word_freq = defaultdict(int)
-    punc_chars = punctuation + '¿¡♪«»—©'
+    punc_chars = punctuation + '¿¡♪«»—©‘’–‚”“„•'
     if text:
         words = text.lower().split()
         for word in words:
