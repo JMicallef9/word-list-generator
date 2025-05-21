@@ -9,6 +9,7 @@ import docx
 from pypdf import PdfReader
 from bs4 import BeautifulSoup
 import requests
+from ebooklib import epub, ITEM_DOCUMENT
 
 
 def extract_text_from_file(filepath):
@@ -21,7 +22,7 @@ def extract_text_from_file(filepath):
     Returns:
         str: The text from the given file, with timestamps and formatting removed.
     """
-    valid_formats = ['.srt', '.txt', '.md', '.docx', '.pdf']
+    valid_formats = ['.srt', '.txt', '.md', '.docx', '.pdf', '.epub']
 
     filepath = Path(filepath)
 
@@ -45,6 +46,14 @@ def extract_text_from_file(filepath):
             text = ""
             for page in pdf_reader.pages:
                 text += page.extract_text()
+        
+        elif filepath.suffix == '.epub':
+            book = epub.read_epub(str(filepath))
+            text = ""
+            for item in book.get_items():
+                if item.get_type() == ITEM_DOCUMENT:
+                    soup = BeautifulSoup(item.get_content(), 'html.parser')
+                    text += soup.get_text().strip()
 
         else:
             with open(filepath) as f:
