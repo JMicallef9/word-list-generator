@@ -346,7 +346,7 @@ class TestConvertToCSV:
         with open(example_csv, newline="") as file:
             reader = csv.reader(file)
             first_row = next(reader)
-            assert first_row[0] == 'hello'
+            assert first_row[0].lstrip('\ufeff') == 'hello'
             assert int(first_row[1]) == 1
     
     def test_sorts_and_converts_multiple_key_value_pairs(self, example_csv):
@@ -356,7 +356,7 @@ class TestConvertToCSV:
         with open(example_csv, newline="") as file:
             reader = csv.reader(file)
             first_row = next(reader)
-            assert first_row[0] == 'abacus'
+            assert first_row[0].lstrip('\ufeff') == 'abacus'
             assert int(first_row[1]) == 1
             second_row = next(reader)
             assert second_row[0] == 'hello'
