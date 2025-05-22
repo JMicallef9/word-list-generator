@@ -168,7 +168,7 @@ class TestGetWordsFromDeck:
             "modelName": "Basic",
             "tags":["tag","another_tag"],
             "fields": {
-                "Front": {"value": "F", "order": 0},
+                "Front": {"value": "Físico-químico", "order": 0},
                 "Back": {"value": "test", "order": 1}
             }
         }
