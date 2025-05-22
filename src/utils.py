@@ -56,7 +56,7 @@ def extract_text_from_file(filepath):
                     text += soup.get_text().strip()
 
         else:
-            with open(filepath) as f:
+            with open(filepath, encoding="utf-8-sig") as f:
                 text = f.read()
             
         cleaned_text = re.sub(combined_pattern, "", text)
@@ -177,7 +177,7 @@ def convert_word_list_to_csv(words, filepath):
     """
     sorted_words = sorted(words.items())
 
-    with open(filepath, mode="w", newline="") as file:
+    with open(filepath, mode="w", encoding="utf-8-sig", newline="") as file:
         writer = csv.writer(file)
         for word, count in sorted_words:
             if word:
