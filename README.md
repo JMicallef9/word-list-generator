@@ -13,10 +13,11 @@ Also includes optional filtering using Anki decks.
 
 ## Instructions
 
-1. Download the /src folder.
-2. Navigate to the /src folder via the command line.
-3. Install the necessary dependencies using the following command: pip install -r requirements.txt
-4. Run the script using the following command: python script.py
+1. Clone the repository with the following command: `git clone https://github.com/JMicallef9/word-list-generator`
+2. Navigate to the /src folder via the command line: `cd word-list-generator/src`
+3. Create a virtual environment: `python -m venv venv` OR `.venv\Scripts\activate` (on Windows)
+4. Install the necessary dependencies using the following command: `pip install -r requirements.txt`
+5. Run the script using the following command: `python script.py`
 
 ## Running the script
 
