@@ -10,6 +10,8 @@ from pypdf import PdfReader
 from bs4 import BeautifulSoup
 import requests
 from ebooklib import epub, ITEM_DOCUMENT
+import tempfile
+import subprocess
 
 
 def extract_text_from_file(filepath):
@@ -223,3 +225,28 @@ def extract_text_from_url(url):
 
     except requests.RequestException:
         raise ValueError("Text extraction failed. URL may be invalid.")
+
+def extract_text_from_mkv(filepath, track_num):
+    """
+    Extracts text from the subtitles of an MKV file.
+
+    Args:
+        filepath (str): The path to the MKV file.
+        track_num (int): Subtitle track number to extract.
+
+    Returns:
+        str: The text content from the subtitles.
+    """
+    with tempfile.NamedTemporaryFile(suffix=".srt", delete=False) as temp_subs:
+        temp_path = temp_subs.name
+        subprocess.run([
+            "mkvextract", "tracks",
+            filepath,
+            f"{track_num}:{temp_path}"
+        ], check=True)
+
+        text = extract_text_from_file(temp_path)
+
+        Path(temp_path).unlink(missing_ok=True)
+
+        return text
