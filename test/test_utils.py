@@ -1,4 +1,4 @@
-from src.utils import extract_text_from_file, generate_word_list, convert_word_list_to_csv_with_translations, check_for_new_words, get_user_language, convert_word_list_to_csv, extract_file_list, extract_text_from_url
+from src.utils import extract_text_from_file, generate_word_list, convert_word_list_to_csv_with_translations, check_for_new_words, get_user_language, convert_word_list_to_csv, extract_file_list, extract_text_from_url, extract_text_from_mkv 
 import pytest
 import csv
 import docx
@@ -469,3 +469,25 @@ class TestExtractTextFromUrl:
         with pytest.raises(ValueError) as err:
             extract_text_from_url("www.invalid-url.com")
         assert str(err.value) == "Text extraction failed. URL may be invalid."        
+
+
+@pytest.fixture
+def mock_mkv_subs(tmp_path):
+    """Creates a mock subprocess on an .srt file."""
+    example_srt = tmp_path / "example.srt"
+    example_srt.write_text('''6
+                                00:04:33,232 --> 00:04:36,359
+                                <i>This is Mr. Milchick from work,\nand I'm thrilled to welcome you</i>''')
+
+    with patch("tempfile.NamedTemporaryFile") as mock_temp, \
+        patch("subprocess.run") as mock_subp:
+        mock_temp.return_value.__enter__.return_value.name = str(example_srt)
+        yield mock_temp
+
+class TestExtractTextFromMkv:
+    """Tests for the extract_text_from_mkv function."""
+
+    def test_extracts_text_correctly(self, mock_mkv_subs):
+        expected = '''This is Mr. Milchick from work,\nand I'm thrilled to welcome you'''
+
+        assert extract_text_from_mkv("test.mkv", 2) == expected
