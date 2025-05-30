@@ -78,7 +78,7 @@ def word_list_generator():
                     print(f"\nFile processed successfully: {path_input}. To add text from another file to the word list, enter another filepath.")
                     continue
                 except IOError as e:
-                    print(f"\n{e}\nValid file formats include:\n.txt\n.srt\n.md\n")
+                    print(f"\n{e}\nValid file formats include:\n.txt\n.srt\n.md\n.pdf\n.epub")
                 except Exception as e:
                     print(f"\nAn unexpected error occurred: {e}\n")
 
