@@ -488,6 +488,7 @@ class TestExtractTextFromMkv:
     """Tests for the extract_text_from_mkv function."""
 
     def test_extracts_text_correctly(self, mock_mkv_subs):
+        """Checks that text is successfully extracted by the function."""
         expected = '''This is Mr. Milchick from work,\nand I'm thrilled to welcome you'''
 
         assert extract_text_from_mkv("test.mkv", 2) == expected
