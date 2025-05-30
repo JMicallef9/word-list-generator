@@ -6,6 +6,7 @@ from reportlab.pdfgen.canvas import Canvas
 from unittest.mock import patch, Mock
 import requests
 from ebooklib import epub
+from pathlib import Path
 
 
 @pytest.fixture
@@ -482,7 +483,11 @@ def mock_mkv_subs(tmp_path):
     with patch("tempfile.NamedTemporaryFile") as mock_temp, \
         patch("subprocess.run") as mock_subp:
         mock_temp.return_value.__enter__.return_value.name = str(example_srt)
-        yield mock_temp
+        yield {
+            "mock_temp": mock_temp,
+            "mock_subp": mock_subp,
+            "temp_path": str(example_srt)
+            }
 
 class TestExtractTextFromMkv:
     """Tests for the extract_text_from_mkv function."""
@@ -492,3 +497,20 @@ class TestExtractTextFromMkv:
         expected = '''This is Mr. Milchick from work,\nand I'm thrilled to welcome you'''
 
         assert extract_text_from_mkv("test.mkv", 2) == expected
+
+    def test_calls_correct_subprocess_arguments(self, mock_mkv_subs):
+        """Checks that the correct subprocess arguments are used."""
+        extract_text_from_mkv("test.mkv", 2)
+
+        mock_mkv_subs["mock_subp"].assert_called_once_with([
+            "mkvextract",
+            "test.mkv",
+            "tracks",
+            f"2:{mock_mkv_subs['temp_path']}"
+        ], check=True)
+
+    def test_temp_file_removed_after_function_complete(self, mock_mkv_subs):
+        """Checks that the temporary .txt file is deleted."""
+        extract_text_from_mkv("test.mkv", 2)
+
+        assert not Path(mock_mkv_subs["temp_path"]).exists()
