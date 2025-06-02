@@ -1,4 +1,4 @@
-from src.utils import extract_text_from_file, generate_word_list, convert_word_list_to_csv_with_translations, check_for_new_words, get_user_language, convert_word_list_to_csv, extract_file_list, extract_text_from_url, extract_text_from_mkv 
+from src.utils import extract_text_from_file, generate_word_list, convert_word_list_to_csv_with_translations, check_for_new_words, get_user_language, convert_word_list_to_csv, extract_file_list, extract_text_from_url, extract_text_from_mkv, list_subtitle_tracks 
 import pytest
 import csv
 import docx
@@ -7,6 +7,8 @@ from unittest.mock import patch, Mock
 import requests
 from ebooklib import epub
 from pathlib import Path
+import subprocess
+import json
 
 
 @pytest.fixture
@@ -514,3 +516,90 @@ class TestExtractTextFromMkv:
         extract_text_from_mkv("test.mkv", 2)
 
         assert not Path(mock_mkv_subs["temp_path"]).exists()
+
+@pytest.fixture
+def mock_mkvmerge():
+    """Creates mock JSON output from an mkvmerge -J command."""
+    mock_json = {
+        "container": {
+            "type": "Matroska",
+            "properties": {
+                "is_providing_timestamps": True
+                }},
+                "tracks": [
+                    {
+                        "id": 0,
+                        "type": "video",
+                        "codec": "V_MPEG4/ISO/AVC",
+                        "properties": {
+                            "codec_id": "V_MPEG4/ISO/AVC",
+                            "language": "und"
+                                    }
+                    },
+                    {
+                        "id": 1,
+                        "type": "audio",
+                        "codec": "A_AAC",
+                        "properties": {
+                            "codec_id": "A_AAC",
+                            "language": "eng"
+                            }
+                    },
+                    {
+                        "id": 2,
+                        "type": "subtitles",
+                        "codec": "S_TEXT/UTF8",
+                        "properties": {
+                            "codec_id": "S_TEXT/UTF8",
+                            "language": "eng"
+                            }
+                    },
+                    {
+                        "id": 3,
+                        "type": "subtitles",
+                        "codec": "S_TEXT/UTF8",
+                        "properties": {
+                            "codec_id": "S_TEXT/UTF8",
+                            "language": "fra"
+                    }
+                    },
+                    {
+                        "id": 4,
+                        "type": "subtitles",
+                        "codec": "S_TEXT/UTF8",
+                        "properties": {
+                            "codec_id": "S_TEXT/UTF8",
+                            "language": "deu"
+                        }
+                    }
+                ]
+            }
+
+    with patch("subprocess.run") as mock_subp:
+        mock_subp.return_value = subprocess.CompletedProcess(
+            args=["mkvmerge", "-J", "test.mkv"],
+            returncode=0,
+            stdout=json.dumps(mock_json)
+        )
+        yield mock_subp
+
+
+class TestListSubtitleTracks:
+    """Tests for the list_subtitle_tracks function."""
+
+    def test_returns_list_of_tracks(self, mock_mkvmerge):
+        """Checks that a list of tracks is returned."""
+        output = list_subtitle_tracks("test.mkv")
+        assert isinstance(output, list)
+        assert len(output) == 3
+
+    def test_returns_correct_track_data(self, mock_mkvmerge):
+        """Checks that a list of tracks is returned."""
+        output = list_subtitle_tracks("test.mkv")
+
+        for track in output:
+            assert list(track.keys()) == ['id', 'language']
+        
+        assert output[0]['language'] == 'English'
+        assert output[1]['language'] == 'French'
+        assert output[2]['language'] == 'German'
