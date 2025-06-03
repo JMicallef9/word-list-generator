@@ -12,6 +12,8 @@ import requests
 from ebooklib import epub, ITEM_DOCUMENT
 import tempfile
 import subprocess
+import json
+import pycountry
 
 
 def extract_text_from_file(filepath):
@@ -244,8 +246,49 @@ def extract_text_from_mkv(filepath, track_num):
             f"{track_num}:{temp_path}"
         ], check=True)
 
-        text = extract_text_from_file(temp_path)
+    text = extract_text_from_file(temp_path)
 
-        Path(temp_path).unlink(missing_ok=True)
+    Path(temp_path).unlink(missing_ok=True)
 
-        return text
+    return text
+
+def list_subtitle_tracks(filepath):
+    """
+    Returns list of subtitle tracks with language info from an MKV file.
+
+    Args:
+        filepath (str): The path to the MKV file.
+
+    Returns:
+        list: A list of subtitle tracks.
+    """
+    try:
+        result = subprocess.run(
+            ["mkvmerge", "-J", filepath],
+            capture_output=True,
+            text=True,
+            check=True
+        )
+        data = json.loads(result.stdout)
+
+        tracks = []
+        for track in data.get("tracks", []):
+            if track.get("type") == "subtitles":
+                properties = track.get("properties", {})
+
+                id = track.get("id")
+
+                lang_code = properties.get("language", None)
+
+                if lang_code:
+                    lang = pycountry.languages.get(alpha_3=lang_code)
+
+                tracks.append({
+                    "id": id,
+                    "language": lang.name,
+                })
+
+        return tracks
+    
+    except subprocess.CalledProcessError as e:
+        raise ValueError(f"An error occurred: {e}")
