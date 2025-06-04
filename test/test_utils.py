@@ -614,6 +614,7 @@ class TestListSubtitleTracks:
         assert output[2]['language'] == 'German'
     
     def test_error_raised_if_subprocess_fails(self, mkvmerge_error):
+        """Checks that ValueError is raised if subprocess fails."""
         with pytest.raises(ValueError) as err:
             list_subtitle_tracks("test.mkv")
         assert "An error occurred" in str(err.value)
