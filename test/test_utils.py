@@ -583,6 +583,15 @@ def mock_mkvmerge():
         )
         yield mock_subp
 
+@pytest.fixture
+def mkvmerge_error():
+    """Simulates failed subprocess command."""
+    with patch("subprocess.run") as mock_subp:
+        mock_subp.side_effect = subprocess.CalledProcessError(
+            returncode=1,
+            cmd=["mkvmerge", "-J", "test.mkv"]
+        )
+        yield mock_subp
 
 class TestListSubtitleTracks:
     """Tests for the list_subtitle_tracks function."""
@@ -603,3 +612,8 @@ class TestListSubtitleTracks:
         assert output[0]['language'] == 'English'
         assert output[1]['language'] == 'French'
         assert output[2]['language'] == 'German'
+    
+    def test_error_raised_if_subprocess_fails(self, mkvmerge_error):
+        with pytest.raises(ValueError) as err:
+            list_subtitle_tracks("test.mkv")
+        assert "An error occurred" in str(err.value)
