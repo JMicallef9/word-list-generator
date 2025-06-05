@@ -291,4 +291,4 @@ def list_subtitle_tracks(filepath):
         return tracks
     
     except subprocess.CalledProcessError as e:
-        raise ValueError(f"An error occurred: {e}")
+        raise ValueError(f"An error occurred. {e}")
