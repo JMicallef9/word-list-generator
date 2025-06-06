@@ -17,7 +17,7 @@ Example:
 """
 
 
-from utils import extract_text_from_file, generate_word_list, check_for_new_words, get_user_language, convert_word_list_to_csv, extract_file_list, extract_text_from_url
+from utils import extract_text_from_file, generate_word_list, check_for_new_words, get_user_language, convert_word_list_to_csv, extract_file_list, extract_text_from_url, list_subtitle_tracks, extract_text_from_mkv
 from anki_utils import get_anki_decks, get_words_from_deck
 from pathlib import Path
 import time
@@ -28,7 +28,7 @@ from urllib.parse import urlparse
 def word_list_generator():
     """Runs the interactive word list generation process."""
     file_texts = []
-    valid_extensions = ['.srt', '.txt', '.md', '.docx', '.pdf', '.epub']
+    valid_extensions = ['.srt', '.txt', '.md', '.docx', '.pdf', '.epub', '.mkv']
     
     while True:
         path_input = input("Enter a new file, directory path or URL that you wish to process, or press A to continue: ").strip().strip('"').strip("'")
@@ -72,15 +72,44 @@ def word_list_generator():
                         print(f"Error processing {file}: {e}")
             
             elif path.is_file():
-                try:
-                    text = extract_text_from_file(path_input)
-                    file_texts.append(text)
-                    print(f"\nFile processed successfully: {path_input}. To add text from another file to the word list, enter another filepath.")
-                    continue
-                except IOError as e:
-                    print(f"\n{e}\nValid file formats include:\n.txt\n.srt\n.md\n.pdf\n.epub")
-                except Exception as e:
-                    print(f"\nAn unexpected error occurred: {e}\n")
+
+                if path.suffix == '.mkv':
+                    while True:
+                        tracks = list_subtitle_tracks(path_input)
+
+                        if not tracks:
+                            print("No valid subtitle tracks found. Please try another file.")
+
+                        print("\nAvailable subtitle tracks:\n")
+
+                        for track in tracks:
+                            print(f"{track['id']}: {track['language']}")
+                        
+                        choice = int(input("\nWhich subtitle track would you like to extract? Please select a track ID or press C to cancel.\n"))
+
+                        if choice == 'c':
+                            print("\nTrack selection cancelled.")
+                            break
+                    
+                        if choice not in [track['id'] for track in tracks]:
+                            print("\nInvalid input. Please select a valid track ID number.")
+                            continue
+                            
+                        text = extract_text_from_mkv(path_input, choice)
+                        file_texts.append(text)
+                        print(f"\nText successfully extracted from subtitle track {choice} of {path_input}. To add text from another file to the word list, enter another filepath.")
+                        continue
+
+                else:
+                    try:
+                        text = extract_text_from_file(path_input)
+                        file_texts.append(text)
+                        print(f"\nFile processed successfully: {path_input}. To add text from another file to the word list, enter another filepath.")
+                        continue
+                    except IOError as e:
+                        print(f"\n{e}\nValid file formats include:\n.txt\n.srt\n.md\n.pdf\n.epub\n.mkv")
+                    except Exception as e:
+                        print(f"\nAn unexpected error occurred: {e}\n")
 
             else:
                 print("\nFile not found. Please provide a valid filepath (e.g., /path/to/input.txt).")
