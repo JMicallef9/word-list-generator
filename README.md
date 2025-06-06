@@ -18,7 +18,7 @@ Note: when processing .mkv files, the application requires access to `mkvmerge` 
 
 1. Clone the repository with the following command: `git clone https://github.com/JMicallef9/word-list-generator` (or download the repository as a ZIP package: [Download ZIP](https://github.com/JMicallef9/word-list-generator/archive/refs/heads/main.zip))
 2. Navigate to the /src folder via the command line: `cd word-list-generator/src`
-3. Create a virtual environment: `python -m venv venv` followed by `source venv/bin/activate` (macOS/Unix) OR `.venv\Scripts\activate` (Windows)
+3. Create a virtual environment: `python -m venv venv` followed by `source venv/bin/activate` (macOS/Unix) OR `py -m venv venv` followed by `.venv\Scripts\activate.bat` (Windows)
 4. Install the necessary dependencies using the following command: `pip install -r requirements.txt`
 5. Run the script using the following command: `python script.py`
 
