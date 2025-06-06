@@ -612,7 +612,10 @@ class TestListSubtitleTracks:
         assert output[0]['language'] == 'English'
         assert output[1]['language'] == 'French'
         assert output[2]['language'] == 'German'
-    
+        assert isinstance(output[0]['id'], int)
+        assert isinstance(output[1]['id'], int)
+        assert isinstance(output[2]['id'], int)
+
     def test_error_raised_if_subprocess_fails(self, mkvmerge_error):
         """Checks that ValueError is raised if subprocess fails."""
         with pytest.raises(ValueError) as err:
