@@ -241,14 +241,19 @@ def extract_text_from_mkv(filepath, track_num):
     """
     with tempfile.NamedTemporaryFile(suffix=".srt", delete=False) as temp_subs:
         temp_path = temp_subs.name
+    
+    try:
         subprocess.run([
-            "mkvextract", filepath, "tracks",
-            f"{track_num}:{temp_path}"
-        ], check=True)
+                "mkvextract", filepath, "tracks",
+                f"{track_num}:{temp_path}"
+            ], check=True)
 
-    text = extract_text_from_file(temp_path)
+        text = extract_text_from_file(temp_path)
 
-    Path(temp_path).unlink(missing_ok=True)
+        return text
+
+    finally:
+        Path(temp_path).unlink(missing_ok=True)
 
     return text
 
