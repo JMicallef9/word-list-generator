@@ -593,6 +593,108 @@ def mkvmerge_error():
         )
         yield mock_subp
 
+@pytest.fixture
+def mock_old_codes():
+    """Creates mock JSON output with deprecated language codes."""
+    mock_json = {
+        "container": {
+            "type": "Matroska",
+            "properties": {
+                "is_providing_timestamps": True
+                }},
+                "tracks": [
+                    {
+                        "id": 2,
+                        "type": "subtitles",
+                        "codec": "S_TEXT/UTF8",
+                        "properties": {
+                            "codec_id": "S_TEXT/UTF8",
+                            "language": "cze"
+                            }
+                    },
+                    {
+                        "id": 3,
+                        "type": "subtitles",
+                        "codec": "S_TEXT/UTF8",
+                        "properties": {
+                            "codec_id": "S_TEXT/UTF8",
+                            "language": "ger"
+                    }
+                    },
+                    {
+                        "id": 4,
+                        "type": "subtitles",
+                        "codec": "S_TEXT/UTF8",
+                        "properties": {
+                            "codec_id": "S_TEXT/UTF8",
+                            "language": "gre"
+                        }
+                    },
+                    {
+                        "id": 5,
+                        "type": "subtitles",
+                        "codec": "S_TEXT/UTF8",
+                        "properties": {
+                            "codec_id": "S_TEXT/UTF8",
+                            "language": "fre"
+                        }
+                    },
+                    {
+                        "id": 6,
+                        "type": "subtitles",
+                        "codec": "S_TEXT/UTF8",
+                        "properties": {
+                            "codec_id": "S_TEXT/UTF8",
+                            "language": "may"
+                        }
+                    },
+                    {
+                        "id": 7,
+                        "type": "subtitles",
+                        "codec": "S_TEXT/UTF8",
+                        "properties": {
+                            "codec_id": "S_TEXT/UTF8",
+                            "language": "dut"
+                        }
+                    },
+                    {
+                        "id": 8,
+                        "type": "subtitles",
+                        "codec": "S_TEXT/UTF8",
+                        "properties": {
+                            "codec_id": "S_TEXT/UTF8",
+                            "language": "rum"
+                        }
+                    },
+                    {
+                        "id": 9,
+                        "type": "subtitles",
+                        "codec": "S_TEXT/UTF8",
+                        "properties": {
+                            "codec_id": "S_TEXT/UTF8",
+                            "language": "chi"
+                        }
+                    },
+                    {
+                        "id": 10,
+                        "type": "subtitles",
+                        "codec": "S_TEXT/UTF8",
+                        "properties": {
+                            "codec_id": "S_TEXT/UTF8",
+                            "language": "baq"
+                        }
+                    }
+                ]
+            }
+
+    with patch("subprocess.run") as mock_subp:
+        mock_subp.return_value = subprocess.CompletedProcess(
+            args=["mkvmerge", "-J", "test.mkv"],
+            returncode=0,
+            stdout=json.dumps(mock_json)
+        )
+        yield mock_subp
+
 class TestListSubtitleTracks:
     """Tests for the list_subtitle_tracks function."""
 
@@ -621,3 +723,21 @@ class TestListSubtitleTracks:
         with pytest.raises(ValueError) as err:
             list_subtitle_tracks("test.mkv")
         assert "An error occurred" in str(err.value)
+    
+    def test_replaces_deprecated_language_codes(self, mock_old_codes):
+        """Checks that old language codes are replaced with new ones."""
+        output = list_subtitle_tracks("test.mkv")
+
+        languages = [track['language'] for track in output]
+
+        assert languages == [
+            'Czech', 
+            'German', 
+            'Modern Greek (1453-)', 
+            'French', 
+            'Malay (macrolanguage)', 
+            'Dutch', 
+            'Romanian', 
+            'Chinese', 
+            'Basque'
+            ]
