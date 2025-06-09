@@ -78,26 +78,37 @@ def word_list_generator():
 
                     if not tracks:
                         print("No valid subtitle tracks found. Please try another file.")
+                        continue
 
                     print("\nAvailable subtitle tracks:\n")
 
                     for track in tracks:
                         print(f"{track['id']}: {track['language']}")
-                        
-                    choice = input("\nWhich subtitle track would you like to extract? Please select a track ID or press C to cancel.\n")
 
-                    if choice == 'c':
-                        print("\nTrack selection cancelled.")
-                        continue
-                    
-                    if int(choice) not in [track['id'] for track in tracks]:
-                        print("\nInvalid input. Please select a valid track ID number.")
-                        continue
+                    while True:    
+                        choice = input("\nWhich subtitle track would you like to extract? Please select a track ID or press C to cancel.\n")
+
+                        if choice == 'c':
+                            print("\nTrack selection cancelled.")
+                            break
                             
-                    text = extract_text_from_mkv(path_input, choice)
-                    file_texts.append(text)
-                    print(f"\nText successfully extracted from subtitle track {choice} of {path_input}. To add text from another file to the word list, enter another filepath.")
-                    continue
+                        if not choice.isdigit():
+                            print("\nInvalid input. Please select a valid track ID number.")
+                            continue
+
+                        chosen_track = int(choice)
+                        
+                        if chosen_track not in [track['id'] for track in tracks]:
+                            print("\nInvalid input. Please select a valid track ID number.")
+                            continue
+                        
+                        try:
+                            text = extract_text_from_mkv(path_input, chosen_track)
+                            file_texts.append(text)
+                            print(f"\nText successfully extracted from subtitle track {choice} of {path_input}. To add text from another file to the word list, enter another filepath.")
+                        except Exception as e:
+                            print(f"\nSubtitle track extraction failed: {e}")
+                        break
 
                 else:
                     try:
