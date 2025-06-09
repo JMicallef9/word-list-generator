@@ -262,6 +262,18 @@ def list_subtitle_tracks(filepath):
     Returns:
         list: A list of subtitle tracks.
     """
+    code_converter = {
+        "cze": "ces",
+        "ger": "deu",
+        "gre": "ell",
+        "fre": "fra",
+        "may": "msa",
+        "dut": "nld",
+        "rum": "ron",
+        "chi": "zho",
+        "baq": "eus",
+        }
+
     try:
         result = subprocess.run(
             ["mkvmerge", "-J", filepath],
@@ -280,12 +292,20 @@ def list_subtitle_tracks(filepath):
 
                 lang_code = properties.get("language", None)
 
+                if lang_code in code_converter:
+                    lang_code = code_converter[lang_code]
+
+                lang = None
                 if lang_code:
                     lang = pycountry.languages.get(alpha_3=lang_code)
+                    if lang is None:
+                        lang = pycountry.languages.get(alpha_2=lang_code)
+                
+                lang_name = lang.name if lang else "undefined"
 
                 tracks.append({
                     "id": id,
-                    "language": lang.name,
+                    "language": lang_name,
                 })
 
         return tracks
