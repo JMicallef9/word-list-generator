@@ -12,15 +12,15 @@ Also includes optional filtering using Anki decks.
 - Anki and the AnkiConnect add-on (if using Anki filtering)
 - mkvtoolnix (if extracting subtitle tracks from .mkv files) 
 
-Note: when processing .mkv files, the application requires access to `mkvmerge` for track inspection and `mkvextract` for subtitle extraction. Therefore, `mkvtoolnix` must be installed and accessible via your system's command line. Both `mkvmerge` and `mkvextract` should be available in your system's PATH. To verify this, run `mkvmerge -J` or `mkvextract --version` in your terminal. 
+Note: when processing .mkv files, the application requires access to `mkvmerge` for track inspection and `mkvextract` for subtitle extraction. Therefore, `mkvtoolnix` must be installed and accessible via your system's command line. Both `mkvmerge` and `mkvextract` should be available in your system's PATH. To verify this, run `mkvmerge --version` or `mkvextract --version` in your terminal. 
 
 ## Instructions
 
 1. Clone the repository with the following command: `git clone https://github.com/JMicallef9/word-list-generator` (or download the repository as a ZIP package: [Download ZIP](https://github.com/JMicallef9/word-list-generator/archive/refs/heads/main.zip))
-2. Navigate to the /src folder via the command line: `cd word-list-generator/src`
-3. Create a virtual environment: `python -m venv venv` followed by `source venv/bin/activate` (macOS/Unix) OR `py -m venv venv` followed by `.venv\Scripts\activate.bat` (Windows)
+2. Navigate to the main project folder via the command line: `cd word-list-generator`
+3. Create a virtual environment: `python -m venv venv` followed by `source venv/bin/activate` (macOS/Unix) OR `py -m venv venv` followed by `venv\Scripts\activate.bat` (Windows)
 4. Install the necessary dependencies using the following command: `pip install -r requirements.txt`
-5. Run the script using the following command: `python script.py`
+5. Run the script using the following command: `python src/script.py`
 
 ## Running the script
 
