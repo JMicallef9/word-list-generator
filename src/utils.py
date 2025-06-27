@@ -255,7 +255,6 @@ def extract_text_from_mkv(filepath, track_num):
     finally:
         Path(temp_path).unlink(missing_ok=True)
 
-    return text
 
 def list_subtitle_tracks(filepath):
     """
