@@ -1,6 +1,7 @@
 import pytest
 from unittest.mock import patch, MagicMock
-from src.anki_utils import get_anki_decks, get_words_from_deck
+from src.anki_utils import get_anki_decks, get_words_from_deck, get_anki_connect_url
+import os
 
 @pytest.fixture
 def mock_anki_post():
@@ -269,3 +270,14 @@ class TestGetWordsFromDeck:
             mock_post.side_effect = [first_response, second_response]
             output = get_words_from_deck('deck_name')
             assert output == {'hello', 'goodbye', 'yes', 'no'}
+
+
+class TestGetAnkiConnectURL:
+
+    @patch.dict(os.environ, {"ANKICONNECT_HOST": "remote_host"})
+    def test_retrieves_environment_variable(self):
+        assert get_anki_connect_url() == "remote_host"
+    
+    @patch.dict(os.environ, {}, clear=True)
+    def test_returns_default_value_if_no_environment_variable(self):
+        assert get_anki_connect_url() == "http://localhost:8765"
