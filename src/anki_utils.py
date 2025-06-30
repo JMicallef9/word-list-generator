@@ -2,6 +2,7 @@ import requests
 from string import punctuation
 import re
 import html
+import os
 
 
 
@@ -15,7 +16,7 @@ def get_anki_decks():
     Returns:
         list: A list containing the names of all the decks in the user's Anki collection.
     """
-    anki_connect_url = "http://localhost:8765"
+    anki_connect_url = os.getenv("ANKICONNECT_HOST", "http://localhost:8765")
 
     payload = {
         "action": "deckNames",
@@ -34,7 +35,7 @@ def get_words_from_deck(deck_name):
     Returns:
         set: All the unique words appearing on the front or back of the Anki cards in the given deck.
     """
-    anki_connect_url = "http://localhost:8765"
+    anki_connect_url = os.getenv("ANKICONNECT_HOST", "http://localhost:8765")
 
     query = f'deck:"{deck_name}"'
 
