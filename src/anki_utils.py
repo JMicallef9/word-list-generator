@@ -6,6 +6,19 @@ import os
 
 
 
+def get_anki_connect_url():
+    """
+    Retrieves Ankiconnect URL as environment variable or default value.
+
+    Args:
+        None.
+    
+    Returns:
+        str: The Ankiconnect URL.
+    """
+    return os.getenv("ANKICONNECT_HOST", "http://localhost:8765")
+
+
 def get_anki_decks():
     """
     Returns a list of the user's Anki decks.
@@ -16,7 +29,7 @@ def get_anki_decks():
     Returns:
         list: A list containing the names of all the decks in the user's Anki collection.
     """
-    anki_connect_url = os.getenv("ANKICONNECT_HOST", "http://localhost:8765")
+    anki_connect_url = get_anki_connect_url()
 
     payload = {
         "action": "deckNames",
@@ -35,7 +48,7 @@ def get_words_from_deck(deck_name):
     Returns:
         set: All the unique words appearing on the front or back of the Anki cards in the given deck.
     """
-    anki_connect_url = os.getenv("ANKICONNECT_HOST", "http://localhost:8765")
+    anki_connect_url = get_anki_connect_url()
 
     query = f'deck:"{deck_name}"'
 
