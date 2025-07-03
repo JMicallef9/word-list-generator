@@ -1,0 +1,7 @@
+venv/
+__pycache__/
+.python-version
+README.md
+test/
+archive/
+.pytest_cache/
