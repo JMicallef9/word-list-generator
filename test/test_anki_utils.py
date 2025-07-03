@@ -273,11 +273,14 @@ class TestGetWordsFromDeck:
 
 
 class TestGetAnkiConnectURL:
+    """Tests for retrieving the AnkiConnect URL."""
 
     @patch.dict(os.environ, {"ANKICONNECT_HOST": "remote_host"})
     def test_retrieves_environment_variable(self):
+        """Checks that the environment variable is returned."""
         assert get_anki_connect_url() == "remote_host"
     
     @patch.dict(os.environ, {}, clear=True)
     def test_returns_default_value_if_no_environment_variable(self):
+        """Checks that the default URL is returned."""
         assert get_anki_connect_url() == "http://localhost:8765"
