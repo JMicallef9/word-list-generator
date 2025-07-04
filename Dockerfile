@@ -13,4 +13,4 @@ COPY . .
 
 ENV ANKICONNECT_HOST=http://host.docker.internal:8765
 
-CMD ["python3", "script.py"]
+CMD ["python3", "src/script.py"]
