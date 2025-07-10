@@ -228,7 +228,7 @@ def extract_text_from_url(url):
     except requests.RequestException:
         raise ValueError("Text extraction failed. URL may be invalid.")
 
-def extract_text_from_mkv(filepath, track_num):
+def extract_text_from_mkv(filepath, track_num): # add boolean option to save text file
     """
     Extracts text from the subtitles of an MKV file.
 
