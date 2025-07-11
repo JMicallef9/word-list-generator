@@ -228,32 +228,37 @@ def extract_text_from_url(url):
     except requests.RequestException:
         raise ValueError("Text extraction failed. URL may be invalid.")
 
-def extract_text_from_mkv(filepath, track_num): # add boolean option to save text file
+def extract_text_from_mkv(filepath, track_num, output_path=None):
     """
     Extracts text from the subtitles of an MKV file.
 
     Args:
         filepath (str): The path to the MKV file.
         track_num (int): Subtitle track number to extract.
+        output_path (Optional, str): The destination filepath for the extracted .srt file.
 
     Returns:
         str: The text content from the subtitles.
     """
-    with tempfile.NamedTemporaryFile(suffix=".srt", delete=False) as temp_subs:
-        temp_path = temp_subs.name
+    if output_path:
+        output = output_path
+    else:
+        with tempfile.NamedTemporaryFile(suffix=".srt", delete=False) as temp_subs:
+            output = temp_subs.name
     
     try:
         subprocess.run([
                 "mkvextract", filepath, "tracks",
-                f"{track_num}:{temp_path}"
+                f"{track_num}:{output}"
             ], check=True)
 
-        text = extract_text_from_file(temp_path)
+        text = extract_text_from_file(output)
 
         return text
 
     finally:
-        Path(temp_path).unlink(missing_ok=True)
+        if not output_path:
+            Path(output).unlink(missing_ok=True)
 
 
 def list_subtitle_tracks(filepath):
