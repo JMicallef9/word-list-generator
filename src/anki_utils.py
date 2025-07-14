@@ -5,14 +5,13 @@ import html
 import os
 
 
-
 def get_anki_connect_url():
     """
     Retrieves Ankiconnect URL as environment variable or default value.
 
     Args:
         None.
-    
+
     Returns:
         str: The Ankiconnect URL.
     """
@@ -22,12 +21,12 @@ def get_anki_connect_url():
 def get_anki_decks():
     """
     Returns a list of the user's Anki decks.
-    
+
     Args:
         None.
-    
+
     Returns:
-        list: A list containing the names of all the decks in the user's Anki collection.
+        list: The names of all decks in the user's Anki collection.
     """
     anki_connect_url = get_anki_connect_url()
 
@@ -38,15 +37,16 @@ def get_anki_decks():
     response = requests.post(anki_connect_url, json=payload, timeout=5)
     return response.json().get("result", [])
 
+
 def get_words_from_deck(deck_name):
     """
     Retrieves all the unique words that appear in an Anki deck.
-    
+
     Args:
         deck_name (str): The name of an Anki deck.
-    
+
     Returns:
-        set: All the unique words appearing on the front or back of the Anki cards in the given deck.
+        set: All unique words appearing in cards from the given deck.
     """
     anki_connect_url = get_anki_connect_url()
 
@@ -76,8 +76,10 @@ def get_words_from_deck(deck_name):
     punc_chars = punctuation + '¿¡♪'
 
     for note in notes:
-        word_string = note['fields']['Front']['value'].lower() + ' ' + note['fields']['Back']['value'].lower()
- 
+        front = note['fields']['Front']['value'].lower()
+        back = note['fields']['Back']['value'].lower()
+        word_string =  front + ' ' + back
+
         word_string = re.sub(r'<[^>]+>', ' ', word_string)
         word_string = html.unescape(word_string)
 
@@ -87,5 +89,5 @@ def get_words_from_deck(deck_name):
             word = re.sub(rf'^[{punc_chars}]*|[{punc_chars}]*$', '', word)
             if word:
                 word_list.add(word)
-    
+
     return word_list
