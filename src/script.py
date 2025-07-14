@@ -81,8 +81,8 @@ def word_list_generator():
                 files = extract_file_list(path_input, valid_extensions)
                 if not files:
                     print(
-                        "\nNo valid files found in directory. "
-                        "Please try again."
+                        "\nNo valid files found "
+                        "in directory. Please try again."
                         )
                     continue
                 print(
@@ -114,7 +114,7 @@ def word_list_generator():
                     for track in tracks:
                         print(f"{track['id']}: {track['language']}")
 
-                    while True: 
+                    while True:
                         choice = input(
                             "\nWhich subtitle track would you like to extract?" 
                             " Please select a track ID or press C to cancel.\n"
@@ -146,7 +146,8 @@ def word_list_generator():
                             f" from {path_input}."
                             )
                         save_file = input(
-                            "\nTo save a copy of the subtitles as a .srt file, press Y. Otherwise, press any other key to continue: "
+                            "\nTo save a copy of the subtitles as a .srt file," 
+                            " press Y. Otherwise, press any other key to continue: "
                             )
                         
                         srt_name = str(path.with_suffix(".srt")) if save_file.lower() == 'y' else None
@@ -155,7 +156,9 @@ def word_list_generator():
                             text = extract_text_from_mkv(path_input, chosen_track, srt_name)
                             file_texts.append(text)
                             print(
-                                f"\nText successfully extracted from subtitle track {choice} of {path_input}. To add text from another file to the word list, enter another filepath."
+                                f"\nText successfully extracted from subtitle track {choice}"
+                                f" of {path_input}. To add text from another file "
+                                "to the word list, enter another filepath."
                                 )
                         except Exception as e:
                             print(f"\nSubtitle track extraction failed: {e}")
@@ -192,7 +195,9 @@ def word_list_generator():
         if anki_check == 'y':
             decks = get_anki_decks()[1:]
 
-            print("\nWhich deck(s) would you like to filter by? Please select one or more options, separated by commas.\n")
+            print(
+                "\nWhich deck(s) would you like to filter by?"
+                " Please select one or more options, separated by commas.\n")
 
             for i, deck in enumerate(decks, 1):
                 print(f"{i}: {deck}")
@@ -231,7 +236,9 @@ def word_list_generator():
 
     while True:
         csv_name = input(
-            "\nPlease enter the destination filepath for the output CSV file, or press A to save the file in the original directory: "
+            "\nPlease enter the destination filepath "
+            "for the output CSV file, "
+            "or press A to save the file in the original directory: "
             )
 
         if csv_name.lower() == "a" or not csv_name:
@@ -244,7 +251,9 @@ def word_list_generator():
             csv_path_obj = csv_path_obj.with_suffix(".csv")
 
         if not csv_path_obj.parent.exists() or not csv_path_obj.parent.is_dir():
-            print("Invalid filepath provided. File will be saved to original directory.")
+            print(
+                "Invalid filepath provided. File will be saved to original directory."
+                )
             csv_path_obj = default_dir / csv_path_obj.name
         break
 
@@ -255,7 +264,6 @@ def word_list_generator():
     except FileNotFoundError:
         filename = Path.cwd() / csv_path_obj.name
         convert_word_list_to_csv(word_counts, filename)
-
 
     print(f"Word list file created: {csv_path_obj}")
 
