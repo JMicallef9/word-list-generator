@@ -228,7 +228,8 @@ def word_list_generator():
 
             if user_choice == 'c':
                 print(
-                    "\nDeck selection cancelled. Proceeding without Anki filtering."
+                    "\nDeck selection cancelled. "
+                    "Proceeding without Anki filtering."
                     )
                 break
 
@@ -239,7 +240,8 @@ def word_list_generator():
 
                 if not all(1 <= num <= len(decks) for num in selected_options):
                     print(
-                        f"\nInvalid input. Please enter a number between 1 and {len(decks)}."
+                        f"\nInvalid input. "
+                        f"Please enter a number between 1 and {len(decks)}."
                         )
                     time.sleep(0.5)
                     continue
@@ -282,7 +284,7 @@ def word_list_generator():
             csv_path_obj = csv_path_obj.with_suffix(".csv")
 
         if (
-            not csv_path_obj.parent.exists() 
+            not csv_path_obj.parent.exists()
             or not csv_path_obj.parent.is_dir()
         ):
             print(

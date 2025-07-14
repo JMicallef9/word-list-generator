@@ -24,7 +24,7 @@ def extract_text_from_file(filepath):
         filepath (str): The path to a file containing some text.
 
     Returns:
-        str: The text from the given file, with timestamps and formatting removed.
+        str: The text from the file, with timestamps/formatting removed.
     """
     valid_formats = ['.srt', '.txt', '.md', '.docx', '.pdf', '.epub']
 
@@ -32,12 +32,18 @@ def extract_text_from_file(filepath):
 
     if not filepath.exists():
         raise FileNotFoundError(f"Error: The file '{filepath}' was not found.")
-    
+
     if not any(filepath.suffix == ext for ext in valid_formats):
-        raise IOError(f"Error: Could not read the file contents of '{filepath.name}'. File format is invalid.")
+        raise IOError(
+            f"Error: Could not read the file contents of '{filepath.name}'."
+            " File format is invalid.")
 
     try:
-        timestamp_pattern = r'\d+\s+\d{2}:\d{2}:\d{2},\d{3} --> \d{2}:\d{2}:\d{2},\d{3}\s*'
+        timestamp_pattern = (
+            r'\d+\s+'
+            r'\d{2}:\d{2}:\d{2},\d{3} --> '
+            r'\d{2}:\d{2}:\d{2},\d{3}\s*'
+        )
         tag_pattern = r'<.*?>'
         combined_pattern = rf"{timestamp_pattern}|{tag_pattern}"
 
@@ -50,7 +56,7 @@ def extract_text_from_file(filepath):
             text = ""
             for page in pdf_reader.pages:
                 text += page.extract_text()
-        
+
         elif filepath.suffix == '.epub':
             book = epub.read_epub(str(filepath))
             text = ""
@@ -62,28 +68,31 @@ def extract_text_from_file(filepath):
         else:
             with open(filepath, encoding="utf-8-sig") as f:
                 text = f.read()
-            
+
         cleaned_text = re.sub(combined_pattern, "", text)
-        cleaned_text = re.sub(r'[\u200B\u200C\u200D\u2060\uFEFF]', '', cleaned_text)
+        cleaned_text = re.sub(
+            r'[\u200B\u200C\u200D\u2060\uFEFF]', '', cleaned_text
+            )
         cleaned_text = re.sub(r'\\an8}', '', cleaned_text)
         cleaned_text = re.sub(r'\d\.\w+(?:\.\w+)?', '', cleaned_text)
         cleaned_text = re.sub(r'(?<=\w)—(?=\w)', ' ', cleaned_text)
         cleaned_text = unicodedata.normalize("NFC", cleaned_text)
 
         return cleaned_text
-        
+
     except RuntimeError:
         raise RuntimeError(f"Error: Could not read the file '{filepath}'")
+
 
 def generate_word_list(text):
     """
     Generates a list of words and word frequencies in a given text.
-    
+
     Args:
         text (str): Text containing the words to be counted.
-    
+
     Returns:
-        dict: A dictionary containing words and the number of times they appear in the text.
+        dict: A dictionary containing words and word counts.
     """
     word_freq = defaultdict(int)
     punc_chars = punctuation + '¿¡♪«»—©‘’–‚”“„•'
@@ -95,14 +104,15 @@ def generate_word_list(text):
                 word_freq[word] += 1
     return word_freq
 
+
 def check_for_new_words(text_words, anki_words):
     """
-    Removes words from a word frequency dictionary if they are already stored in an existing set.
-    
+    Removes words from a dictionary if they are part of an existing set.
+
     Args:
         text_words (dict): A dictionary containing words and words frequencies.
-        anki_words (set): A set containing unique words retrieved from an Anki deck.
-    
+        anki_words (set): A set containing unique words.
+
     Returns:
         dict: A new dictionary with the words from the set removed.
     """
@@ -112,6 +122,7 @@ def check_for_new_words(text_words, anki_words):
             new_words[key] = value
     return new_words
 
+
 def convert_word_list_to_csv_with_translations(words, filepath, input_lang, target_lang):
     """
     Creates a CSV file containing words and their translations.
@@ -120,8 +131,8 @@ def convert_word_list_to_csv_with_translations(words, filepath, input_lang, targ
         words (dict): A dictionary containing words and word frequencies.
         filepath (str): The intended filepath of the CSV file.
         input_lang (str): The language code representing the language of the inputted words.
-        target_lang (str): The language code of the language in which translations will be provided in the CSV file.
-    
+        target_lang (str): The language code of a target language.
+
     Returns:
         None
     """
@@ -135,7 +146,8 @@ def convert_word_list_to_csv_with_translations(words, filepath, input_lang, targ
         writer = csv.writer(file)
         for (word, count), translation in zip(sorted_words, translated_words):
             writer.writerow([f"{word}: {count}", translation])
-    
+
+
 def get_user_language(test_inputs=None):
     """
     Obtains user-specified language for translation purposes.
