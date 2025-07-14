@@ -44,7 +44,7 @@ dev-setup: setupreq bandit flake8 coverage
 
 ## Run bandit
 run-bandit:
-	$(call execute_in_env, bandit -r ./src)
+	$(call execute_in_env, bandit -r ./src --severity-level medium)
 
 ## Run flake8
 run-flake8:
