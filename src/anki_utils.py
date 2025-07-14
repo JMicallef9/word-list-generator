@@ -35,7 +35,7 @@ def get_anki_decks():
         "action": "deckNames",
         "version": 6
     }
-    response = requests.post(anki_connect_url, json=payload)
+    response = requests.post(anki_connect_url, json=payload, timeout=5)
     return response.json().get("result", [])
 
 def get_words_from_deck(deck_name):
@@ -58,7 +58,7 @@ def get_words_from_deck(deck_name):
         "params": {"query": query}
     }
 
-    response = requests.post(anki_connect_url, json=notes_payload)
+    response = requests.post(anki_connect_url, json=notes_payload, timeout=5)
     response_json = response.json()
     note_ids = response_json.get("result", [])
 
@@ -68,7 +68,7 @@ def get_words_from_deck(deck_name):
         "params": {"notes": note_ids}
     }
 
-    response = requests.post(anki_connect_url, json=info_payload)
+    response = requests.post(anki_connect_url, json=info_payload, timeout=5)
     response_json = response.json()
     notes = response_json.get("result", [])
 
