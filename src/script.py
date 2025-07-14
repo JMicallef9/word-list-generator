@@ -81,7 +81,8 @@ def word_list_generator():
                 files = extract_file_list(path_input, valid_extensions)
                 if not files:
                     print(
-                        "\nNo valid files found in directory. Please try again."
+                        "\nNo valid files found in directory. "
+                        "Please try again."
                         )
                     continue
                 print(
@@ -113,9 +114,10 @@ def word_list_generator():
                     for track in tracks:
                         print(f"{track['id']}: {track['language']}")
 
-                    while True:    
+                    while True: 
                         choice = input(
-                            "\nWhich subtitle track would you like to extract? Please select a track ID or press C to cancel.\n"
+                            "\nWhich subtitle track would you like to extract?" 
+                            " Please select a track ID or press C to cancel.\n"
                             )
 
                         if choice.lower() == 'c':
@@ -123,16 +125,26 @@ def word_list_generator():
                             break
 
                         if not choice.isdigit():
-                            print("\nInvalid input. Please select a valid track ID number.")
+                            print(
+                                "\nInvalid input. "
+                                  "Please select a valid track ID number.")
                             continue
 
                         chosen_track = int(choice)
-                        
-                        if chosen_track not in [track['id'] for track in tracks]:
-                            print("\nInvalid input. Please select a valid track ID number.")
+
+                        if chosen_track not in [
+                            track['id'] for track in tracks
+                            ]:
+                            print(
+                                "\nInvalid input. "
+                                "Please select a valid track ID number."
+                                )
                             continue
-                    
-                        print(f"\nProceeding with extraction of track {choice} from {path_input}.")
+
+                        print(
+                            f"\nProceeding with extraction of track {choice}" 
+                            f" from {path_input}."
+                            )
                         save_file = input(
                             "\nTo save a copy of the subtitles as a .srt file, press Y. Otherwise, press any other key to continue: "
                             )
