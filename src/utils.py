@@ -19,10 +19,10 @@ import pycountry
 def extract_text_from_file(filepath):
     """
     Removes timestamps and formatting from SRT subtitle files.
-    
+
     Args:
         filepath (str): The path to a file containing some text.
-    
+
     Returns:
         str: The text from the given file, with timestamps and formatting removed.
     """

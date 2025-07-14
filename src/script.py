@@ -133,7 +133,8 @@ def word_list_generator():
                         chosen_track = int(choice)
 
                         if chosen_track not in [
-                            track['id'] for track in tracks]:
+                            track['id'] for track in tracks
+                        ]:
                             print(
                                 "\nInvalid input. "
                                 "Please select a valid track ID number."
@@ -161,8 +162,8 @@ def word_list_generator():
                                 )
                             file_texts.append(text)
                             print(
-                                "\nText successfully extracted "
-                                f"from subtitle track {choice} of {path_input}."
+                                "\nText successfully extracted from"
+                                f" subtitle track {choice} of {path_input}."
                                 " To add text from another file "
                                 "to the word list, enter another filepath."
                                 )
@@ -175,7 +176,7 @@ def word_list_generator():
                         text = extract_text_from_file(path_input)
                         file_texts.append(text)
                         print(
-                            f"\nFile processed successfully: {path_input}." 
+                            f"\nFile processed successfully: {path_input}."
                             "To add text from another file to the word list,"
                             " enter another filepath."
                             )
@@ -189,10 +190,13 @@ def word_list_generator():
                         print(f"\nAn unexpected error occurred: {e}\n")
 
             else:
-                print("\nFile not found. Please provide a valid filepath (e.g., /path/to/input.txt).")
+                print(
+                    "\nFile not found. Please provide a valid filepath "
+                    "(e.g., /path/to/input.txt)."
+                    )
                 time.sleep(0.5)
                 continue
-        
+
     if file_texts:
         combined_text = "".join(file_texts)
         print("\nText successfully extracted.")
@@ -202,7 +206,10 @@ def word_list_generator():
 
     word_counts = generate_word_list(combined_text)
 
-    anki_check = input("\nDo you want to filter the word list using an Anki deck? (Y/n): ").strip().lower()
+    anki_check = input(
+        "\nDo you want to filter the word list "
+        "using an Anki deck? (Y/n): "
+        ).strip().lower()
 
     while True:
         if anki_check == 'y':
@@ -214,18 +221,26 @@ def word_list_generator():
 
             for i, deck in enumerate(decks, 1):
                 print(f"{i}: {deck}")
-            
-            user_choice = input("Enter your choice(s) or press C to cancel: ").strip().lower()
+
+            user_choice = input(
+                "Enter your choice(s) or press C to cancel: "
+                ).strip().lower()
 
             if user_choice == 'c':
-                print("\nDeck selection cancelled. Proceeding without Anki filtering.")
+                print(
+                    "\nDeck selection cancelled. Proceeding without Anki filtering."
+                    )
                 break
-            
+
             try:
-                selected_options = [int(num.strip()) for num in user_choice.split(",")]
+                selected_options = [
+                    int(num.strip()) for num in user_choice.split(",")
+                    ]
 
                 if not all(1 <= num <= len(decks) for num in selected_options):
-                    print(f"\nInvalid input. Please enter a number between 1 and {len(decks)}.")
+                    print(
+                        f"\nInvalid input. Please enter a number between 1 and {len(decks)}."
+                        )
                     time.sleep(0.5)
                     continue
 
@@ -237,11 +252,14 @@ def word_list_generator():
                     print(f"{deck}\n")
                     deck_words = get_words_from_deck(deck)
                     word_counts = check_for_new_words(word_counts, deck_words)
-                
+
                 break
 
             except ValueError:
-                print("\nInvalid input. Please enter one or more numbers separated by commas.")
+                print(
+                    "\nInvalid input. "
+                    "Please enter one or more numbers separated by commas."
+                    )
                 time.sleep(0.5)
                 continue
         else:
@@ -263,9 +281,13 @@ def word_list_generator():
         if csv_path_obj.suffix.lower() != ".csv":
             csv_path_obj = csv_path_obj.with_suffix(".csv")
 
-        if not csv_path_obj.parent.exists() or not csv_path_obj.parent.is_dir():
+        if (
+            not csv_path_obj.parent.exists() 
+            or not csv_path_obj.parent.is_dir()
+        ):
             print(
-                "Invalid filepath provided. File will be saved to original directory."
+                "Invalid filepath provided. "
+                "File will be saved to original directory."
                 )
             csv_path_obj = default_dir / csv_path_obj.name
         break
