@@ -103,9 +103,9 @@ def word_list_generator():
                             continue
                     
                         print(f"\nProceeding with extraction of track {choice} from {path_input}.")
-                        save_file = input("\nTo save a copy of the subtitles as a .srt file, press Y. Otherwise, press any other key to continue.")
+                        save_file = input("\nTo save a copy of the subtitles as a .srt file, press Y. Otherwise, press any other key to continue: ")
                         
-                        srt_name = path.stem + ".srt" if save_file.lower() == 'y' else None
+                        srt_name = str(path.with_suffix(".srt")) if save_file.lower() == 'y' else None
                         
                         try:
                             text = extract_text_from_mkv(path_input, chosen_track, srt_name)
