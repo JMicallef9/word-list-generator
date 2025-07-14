@@ -123,21 +123,21 @@ def check_for_new_words(text_words, anki_words):
     return new_words
 
 
-def convert_word_list_to_csv_with_translations(words, filepath, input_lang, target_lang):
+def convert_word_list_to_csv_with_translations(words, filepath, lang, target):
     """
     Creates a CSV file containing words and their translations.
 
     Args:
         words (dict): A dictionary containing words and word frequencies.
         filepath (str): The intended filepath of the CSV file.
-        input_lang (str): The language code representing the language of the inputted words.
-        target_lang (str): The language code of a target language.
+        lang (str): The language code of the input language.
+        target (str): The language code of the target language.
 
     Returns:
         None
     """
     sorted_words = sorted(words.items())
-    translator = GoogleTranslator(source=input_lang, target=target_lang)
+    translator = GoogleTranslator(source=lang, target=target)
 
     word_list = [word for word, count in sorted_words]
     translated_words = translator.translate_batch(word_list)
@@ -153,8 +153,8 @@ def get_user_language(test_inputs=None):
     Obtains user-specified language for translation purposes.
 
     Args:
-        test_inputs (list): A list of test inputs representing languages (optional).
-    
+        test_inputs (list): Test inputs representing languages (optional).
+
     Returns:
         str: A two-letter code representing the user-specified language.
     """
@@ -164,7 +164,13 @@ def get_user_language(test_inputs=None):
         test_inputs = iter(test_inputs)
 
     while True:
-        user_lang = next(test_inputs) if test_inputs else input("Please enter a language name or two-letter language code.\nTo see a list of all available languages, press L.\n")
+        if test_inputs:
+            user_lang = next(test_inputs)
+        else:
+            user_lang = input(
+                "Please enter a language name or two-letter language code."
+                "\nTo see a list of all available languages, press L.\n"
+                )
         user_lang = user_lang.strip().lower()
 
         if user_lang in valid_languages.values():
@@ -187,7 +193,7 @@ def convert_word_list_to_csv(words, filepath):
     Args:
         words (dict): A dictionary containing words and word frequencies.
         filepath (str): The intended filepath of the CSV file.
-    
+
     Returns:
         None
     """
@@ -198,7 +204,8 @@ def convert_word_list_to_csv(words, filepath):
         for word, count in sorted_words:
             if word:
                 writer.writerow([word, count])
-    
+
+
 def extract_file_list(dir, exts):
     """
     Extracts a list of files in a directory that match a list of extensions.
@@ -206,17 +213,18 @@ def extract_file_list(dir, exts):
     Args:
         dir (str): A directory path.
         exts (list): A list of file extensions.
-    
+
     Returns:
         list: A list of filepaths.
     """
     path = Path(dir)
-    
+
     if not path.is_dir():
         raise ValueError(f"Invalid directory: {dir}")
 
     files = [file for file in path.glob("**/*") if file.suffix in exts]
     return files
+
 
 def extract_text_from_url(url):
     """
@@ -240,6 +248,7 @@ def extract_text_from_url(url):
     except requests.RequestException:
         raise ValueError("Text extraction failed. URL may be invalid.")
 
+
 def extract_text_from_mkv(filepath, track_num, output_path=None):
     """
     Extracts text from the subtitles of an MKV file.
@@ -247,7 +256,7 @@ def extract_text_from_mkv(filepath, track_num, output_path=None):
     Args:
         filepath (str): The path to the MKV file.
         track_num (int): Subtitle track number to extract.
-        output_path (Optional, str): The destination filepath for the extracted .srt file.
+        output_path (Optional, str): The destination filepath.
 
     Returns:
         str: The text content from the subtitles.
@@ -255,9 +264,11 @@ def extract_text_from_mkv(filepath, track_num, output_path=None):
     if output_path:
         output = output_path
     else:
-        with tempfile.NamedTemporaryFile(suffix=".srt", delete=False) as temp_subs:
+        with tempfile.NamedTemporaryFile(
+            suffix=".srt", delete=False
+        ) as temp_subs:
             output = temp_subs.name
-    
+
     try:
         subprocess.run([
                 "mkvextract", filepath, "tracks",
@@ -321,7 +332,7 @@ def list_subtitle_tracks(filepath):
                     lang = pycountry.languages.get(alpha_3=lang_code)
                     if lang is None:
                         lang = pycountry.languages.get(alpha_2=lang_code)
-                
+
                 lang_name = lang.name if lang else "undefined"
 
                 tracks.append({
@@ -330,6 +341,6 @@ def list_subtitle_tracks(filepath):
                 })
 
         return tracks
-    
+
     except subprocess.CalledProcessError as e:
         raise ValueError(f"An error occurred. {e}")
