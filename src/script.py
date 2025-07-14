@@ -88,7 +88,7 @@ def word_list_generator():
                     while True:    
                         choice = input("\nWhich subtitle track would you like to extract? Please select a track ID or press C to cancel.\n")
 
-                        if choice == 'c':
+                        if choice.lower() == 'c':
                             print("\nTrack selection cancelled.")
                             break
                             
@@ -101,9 +101,14 @@ def word_list_generator():
                         if chosen_track not in [track['id'] for track in tracks]:
                             print("\nInvalid input. Please select a valid track ID number.")
                             continue
+                    
+                        print(f"\nProceeding with extraction of track {choice} from {path_input}.")
+                        save_file = input("\nTo save a copy of the subtitles as a .srt file, press Y. Otherwise, press any other key to continue.")
+                        
+                        srt_name = path.stem + ".srt" if save_file.lower() == 'y' else None
                         
                         try:
-                            text = extract_text_from_mkv(path_input, chosen_track)
+                            text = extract_text_from_mkv(path_input, chosen_track, srt_name)
                             file_texts.append(text)
                             print(f"\nText successfully extracted from subtitle track {choice} of {path_input}. To add text from another file to the word list, enter another filepath.")
                         except Exception as e:

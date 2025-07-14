@@ -695,6 +695,7 @@ def mock_old_codes():
         )
         yield mock_subp
 
+
 class TestListSubtitleTracks:
     """Tests for the list_subtitle_tracks function."""
 
