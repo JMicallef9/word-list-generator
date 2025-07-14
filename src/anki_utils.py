@@ -78,7 +78,7 @@ def get_words_from_deck(deck_name):
     for note in notes:
         front = note['fields']['Front']['value'].lower()
         back = note['fields']['Back']['value'].lower()
-        word_string =  front + ' ' + back
+        word_string = front + ' ' + back
 
         word_string = re.sub(r'<[^>]+>', ' ', word_string)
         word_string = html.unescape(word_string)

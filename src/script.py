@@ -1,9 +1,12 @@
 """
-Script for extracting words from a text file, filtering them using an Anki deck (optional), and exporting the word list to a CSV file.
+The purpose of the script is to:
+    - Extract words from a file.
+    - Filter the words using an Anki deck (optional).
+    - Export a word list to a .csv file.
 
 Usage:
     Run the script and follow the prompts to:
-    - Provide a file containing text (.txt, .srt, .md, .docx, .pdf, .epub) or a URL.
+    - Provide a file (.txt, .srt, .md, .docx, .pdf, .epub, .mkv) or a URL.
     - Optionally filter words using an Anki deck
     - Export the processed word list to a CSV file
 
@@ -17,7 +20,15 @@ Example:
 """
 
 
-from utils import extract_text_from_file, generate_word_list, check_for_new_words, get_user_language, convert_word_list_to_csv, extract_file_list, extract_text_from_url, list_subtitle_tracks, extract_text_from_mkv
+from utils import (
+    extract_text_from_file, 
+    generate_word_list, 
+    check_for_new_words, 
+    convert_word_list_to_csv, 
+    extract_file_list, 
+    extract_text_from_url, 
+    list_subtitle_tracks, 
+    extract_text_from_mkv)
 from anki_utils import get_anki_decks, get_words_from_deck
 from pathlib import Path
 import time
@@ -28,14 +39,18 @@ from urllib.parse import urlparse
 def word_list_generator():
     """Runs the interactive word list generation process."""
     file_texts = []
-    valid_extensions = ['.srt', '.txt', '.md', '.docx', '.pdf', '.epub', '.mkv']
-    
+    valid_extensions = [
+        '.srt', '.txt', '.md', '.docx', '.pdf', '.epub', '.mkv'
+        ]
+
     while True:
-        path_input = input("Enter a new file, directory path or URL that you wish to process, or press A to continue: ").strip().strip('"').strip("'")
+        path_input = input(
+            "Enter a new file, directory path or URL that you wish to process, or press A to continue: "
+            ).strip().strip('"').strip("'")
 
         if path_input.lower() == 'a':
             break
-        
+
         parsed = urlparse(path_input)
         is_url = parsed.scheme in ("http", "https") and parsed.netloc != ""
 
@@ -43,7 +58,9 @@ def word_list_generator():
             try:
                 text = extract_text_from_url(path_input)
                 file_texts.append(text)
-                print(f"\nText processed successfully. To add more text to the word list, enter another URL or filepath.")
+                print(
+                    "\nText processed successfully. To add more text to the word list, enter another URL or filepath."
+                    )
                 default_name = Path(parsed.path).stem + ".csv"
                 default_dir = Path.cwd()
                 continue
@@ -51,7 +68,7 @@ def word_list_generator():
                 print("\nError. Invalid URL provided.")
                 time.sleep(0.5)
                 continue
-        
+
         else:
             path = Path(path_input)
             default_name = path.stem + ".csv"
@@ -60,9 +77,13 @@ def word_list_generator():
             if path.is_dir():
                 files = extract_file_list(path_input, valid_extensions)
                 if not files:
-                    print("\nNo valid files found in directory. Please try again.")
+                    print(
+                        "\nNo valid files found in directory. Please try again."
+                        )
                     continue
-                print(f"\nProcessing {len(files)} files from the following directory: {path_input}")
+                print(
+                    f"\nProcessing {len(files)} files from the following directory: {path_input}"
+                    )
                 for file in files:
                     try:
                         text = extract_text_from_file(file)
@@ -70,14 +91,16 @@ def word_list_generator():
                         print(f"Processed file: {file}")
                     except Exception as e:
                         print(f"Error processing {file}: {e}")
-            
+
             elif path.is_file():
 
                 if path.suffix == '.mkv':
                     tracks = list_subtitle_tracks(path_input)
 
                     if not tracks:
-                        print("No valid subtitle tracks found. Please try another file.")
+                        print(
+                            "No valid subtitle tracks found. Please try another file."
+                            )
                         continue
 
                     print("\nAvailable subtitle tracks:\n")
@@ -86,12 +109,14 @@ def word_list_generator():
                         print(f"{track['id']}: {track['language']}")
 
                     while True:    
-                        choice = input("\nWhich subtitle track would you like to extract? Please select a track ID or press C to cancel.\n")
+                        choice = input(
+                            "\nWhich subtitle track would you like to extract? Please select a track ID or press C to cancel.\n"
+                            )
 
                         if choice.lower() == 'c':
                             print("\nTrack selection cancelled.")
                             break
-                            
+
                         if not choice.isdigit():
                             print("\nInvalid input. Please select a valid track ID number.")
                             continue
@@ -103,14 +128,18 @@ def word_list_generator():
                             continue
                     
                         print(f"\nProceeding with extraction of track {choice} from {path_input}.")
-                        save_file = input("\nTo save a copy of the subtitles as a .srt file, press Y. Otherwise, press any other key to continue: ")
+                        save_file = input(
+                            "\nTo save a copy of the subtitles as a .srt file, press Y. Otherwise, press any other key to continue: "
+                            )
                         
                         srt_name = str(path.with_suffix(".srt")) if save_file.lower() == 'y' else None
                         
                         try:
                             text = extract_text_from_mkv(path_input, chosen_track, srt_name)
                             file_texts.append(text)
-                            print(f"\nText successfully extracted from subtitle track {choice} of {path_input}. To add text from another file to the word list, enter another filepath.")
+                            print(
+                                f"\nText successfully extracted from subtitle track {choice} of {path_input}. To add text from another file to the word list, enter another filepath."
+                                )
                         except Exception as e:
                             print(f"\nSubtitle track extraction failed: {e}")
                         break
@@ -184,7 +213,9 @@ def word_list_generator():
             break
 
     while True:
-        csv_name = input("\nPlease enter the destination filepath for the output CSV file, or press A to save the file in the original directory: ")
+        csv_name = input(
+            "\nPlease enter the destination filepath for the output CSV file, or press A to save the file in the original directory: "
+            )
 
         if csv_name.lower() == "a" or not csv_name:
             csv_path_obj = default_dir / default_name
