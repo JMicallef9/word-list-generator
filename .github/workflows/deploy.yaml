@@ -1,4 +1,4 @@
-name: streaming-data
+name: word-list-generator
 
 on:
   push:
