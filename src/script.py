@@ -21,13 +21,13 @@ Example:
 
 
 from utils import (
-    extract_text_from_file, 
-    generate_word_list, 
-    check_for_new_words, 
-    convert_word_list_to_csv, 
-    extract_file_list, 
-    extract_text_from_url, 
-    list_subtitle_tracks, 
+    extract_text_from_file,
+    generate_word_list,
+    check_for_new_words,
+    convert_word_list_to_csv,
+    extract_file_list,
+    extract_text_from_url,
+    list_subtitle_tracks,
     extract_text_from_mkv)
 from anki_utils import get_anki_decks, get_words_from_deck
 from pathlib import Path
@@ -45,7 +45,8 @@ def word_list_generator():
 
     while True:
         path_input = input(
-            "Enter a new file, directory path or URL that you wish to process, or press A to continue: "
+            "Enter a new file, directory path or URL "
+            "that you wish to process, or press A to continue: "
             ).strip().strip('"').strip("'")
 
         if path_input.lower() == 'a':
@@ -59,7 +60,9 @@ def word_list_generator():
                 text = extract_text_from_url(path_input)
                 file_texts.append(text)
                 print(
-                    "\nText processed successfully. To add more text to the word list, enter another URL or filepath."
+                    "\nText processed successfully. "
+                    "To add more text to the word list, "
+                    "enter another URL or filepath."
                     )
                 default_name = Path(parsed.path).stem + ".csv"
                 default_dir = Path.cwd()
@@ -82,7 +85,8 @@ def word_list_generator():
                         )
                     continue
                 print(
-                    f"\nProcessing {len(files)} files from the following directory: {path_input}"
+                    f"\nProcessing {len(files)} files from "
+                    f"the following directory: {path_input}"
                     )
                 for file in files:
                     try:
@@ -99,7 +103,8 @@ def word_list_generator():
 
                     if not tracks:
                         print(
-                            "No valid subtitle tracks found. Please try another file."
+                            "No valid subtitle tracks found. "
+                            "Please try another file."
                             )
                         continue
 
