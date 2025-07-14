@@ -116,7 +116,7 @@ def word_list_generator():
 
                     while True:
                         choice = input(
-                            "\nWhich subtitle track would you like to extract?" 
+                            "\nWhich subtitle track would you like to extract?"
                             " Please select a track ID or press C to cancel.\n"
                             )
 
@@ -127,14 +127,13 @@ def word_list_generator():
                         if not choice.isdigit():
                             print(
                                 "\nInvalid input. "
-                                  "Please select a valid track ID number.")
+                                "Please select a valid track ID number.")
                             continue
 
                         chosen_track = int(choice)
 
                         if chosen_track not in [
-                            track['id'] for track in tracks
-                            ]:
+                            track['id'] for track in tracks]:
                             print(
                                 "\nInvalid input. "
                                 "Please select a valid track ID number."
@@ -142,22 +141,29 @@ def word_list_generator():
                             continue
 
                         print(
-                            f"\nProceeding with extraction of track {choice}" 
+                            f"\nProceeding with extraction of track {choice}"
                             f" from {path_input}."
                             )
                         save_file = input(
-                            "\nTo save a copy of the subtitles as a .srt file," 
-                            " press Y. Otherwise, press any other key to continue: "
+                            "\nTo save a copy of the subtitles as a .srt file,"
+                            " press Y. Otherwise, "
+                            "press any other key to continue: "
                             )
-                        
-                        srt_name = str(path.with_suffix(".srt")) if save_file.lower() == 'y' else None
-                        
+
+                        if save_file.lower() == 'y':
+                            srt_name = str(path.with_suffix(".srt"))
+                        else:
+                            srt_name = None
+
                         try:
-                            text = extract_text_from_mkv(path_input, chosen_track, srt_name)
+                            text = extract_text_from_mkv(
+                                path_input, chosen_track, srt_name
+                                )
                             file_texts.append(text)
                             print(
-                                f"\nText successfully extracted from subtitle track {choice}"
-                                f" of {path_input}. To add text from another file "
+                                "\nText successfully extracted "
+                                f"from subtitle track {choice} of {path_input}."
+                                " To add text from another file "
                                 "to the word list, enter another filepath."
                                 )
                         except Exception as e:
@@ -168,10 +174,17 @@ def word_list_generator():
                     try:
                         text = extract_text_from_file(path_input)
                         file_texts.append(text)
-                        print(f"\nFile processed successfully: {path_input}. To add text from another file to the word list, enter another filepath.")
+                        print(
+                            f"\nFile processed successfully: {path_input}." 
+                            "To add text from another file to the word list,"
+                            " enter another filepath."
+                            )
                         continue
                     except IOError as e:
-                        print(f"\n{e}\nValid file formats include:\n.txt\n.srt\n.md\n.pdf\n.epub\n.mkv")
+                        print(
+                            f"\n{e}\nValid file formats include:"
+                            "\n.txt\n.srt\n.md\n.pdf\n.epub\n.mkv"
+                            )
                     except Exception as e:
                         print(f"\nAn unexpected error occurred: {e}\n")
 
