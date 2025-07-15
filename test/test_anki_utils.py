@@ -17,18 +17,18 @@ def mock_anki_post():
         second_mock_response = MagicMock()
         second_mock_response.json.return_value = {
             "result": [
-        {
-            "noteId": 1502298033753,
-            "modelName": "Basic",
-            "tags": ["tag", "another_tag"],
-            "fields": {
-                "Front": {"value": "front content", "order": 0},
-                "Back": {"value": "back content", "order": 1}
+                {
+                    "noteId": 1502298033753,
+                    "modelName": "Basic",
+                    "tags": ["tag", "another_tag"],
+                    "fields": {
+                        "Front": {"value": "front content", "order": 0},
+                        "Back": {"value": "back content", "order": 1}
+                        }
+                    }
+                ],
+                "error": None
             }
-        }
-    ],
-    "error": None
-    }
         mock_post.side_effect = [first_mock_response, second_mock_response]
         yield mock_post
 
@@ -40,7 +40,7 @@ class TestGetAnkiDecks:
     def test_returns_list_of_decks(self, mock_post):
         """Deck names should match expected output."""
         mock_post.return_value.json.return_value = {
-            'result': ['DeckA', 'DeckB'], 
+            'result': ['DeckA', 'DeckB'],
             'error': None
         }
         output = get_anki_decks()
@@ -50,7 +50,7 @@ class TestGetAnkiDecks:
     def test_returns_empty_list_if_no_decks(self, mock_post):
         """Should return empty list if no decks exist."""
         mock_post.return_value.json.return_value = {
-            'result': [], 
+            'result': [],
             'error': None
         }
         output = get_anki_decks()
@@ -60,7 +60,7 @@ class TestGetAnkiDecks:
     def test_empty_list_returned_if_error_response(self, mock_post):
         """Should return empty list when Anki API returns an error."""
         mock_post.return_value.json.return_value = {
-            'result': None, 
+            'result': None,
             'error': 'An error occurred.'
         }
         output = get_anki_decks()
@@ -92,7 +92,7 @@ class TestGetWordsFromDeck:
             first_response.json.return_value = {
                 "result": [1483959289817, 1483959291695],
                 "error": None
-            } 
+            }
             second_response = MagicMock()
             second_response.json.return_value = {
                 "result": [
@@ -106,8 +106,8 @@ class TestGetWordsFromDeck:
                             }
                         }
                     ],
-                    "error": None
-                }
+                "error": None
+            }
             mock_post.side_effect = [first_response, second_response]
             output = get_words_from_deck('deck_name')
             assert output == {'hello'}
@@ -119,22 +119,25 @@ class TestGetWordsFromDeck:
             first_response.json.return_value = {
                 "result": [1483959289817, 1483959291695],
                 "error": None
-            } 
+            }
             second_response = MagicMock()
             second_response.json.return_value = {
                 "result": [
                     {
                         "noteId": 1502298033753,
                         "modelName": "Basic",
-                        "tags": ["tag","another_tag"],
+                        "tags": ["tag", "another_tag"],
                         "fields": {
-                            "Front": {"value": "hello: okay, everybody!", "order": 0},
+                            "Front": {
+                                "value": "hello: okay, everybody!",
+                                "order": 0
+                                },
                             "Back": {"value": "Meaning = 'hello'", "order": 1}
                             }
                         }
                     ],
-                    "error": None
-                }
+                "error": None
+            }
             mock_post.side_effect = [first_response, second_response]
             output = get_words_from_deck('deck_name')
             assert output == {'hello', 'okay', 'everybody', 'meaning'}
@@ -146,7 +149,7 @@ class TestGetWordsFromDeck:
             first_response.json.return_value = {
                 "result": [1483959289817, 1483959291695],
                 "error": None
-            } 
+            }
             second_response = MagicMock()
             second_response.json.return_value = {
                 "result": [
@@ -173,7 +176,7 @@ class TestGetWordsFromDeck:
             first_response.json.return_value = {
                 "result": [1483959289817, 1483959291695],
                 "error": None
-            } 
+            }
             second_response = MagicMock()
             second_response.json.return_value = {
                 "result": [
@@ -187,8 +190,8 @@ class TestGetWordsFromDeck:
                             }
                         }
                     ],
-                    "error": None
-                }
+                "error": None
+            }
             mock_post.side_effect = [first_response, second_response]
             output = get_words_from_deck('deck_name')
             assert output == {'físico-químico', 'test'}
@@ -200,7 +203,7 @@ class TestGetWordsFromDeck:
             first_response.json.return_value = {
                 "result": [1483959289817, 1483959291695],
                 "error": None
-                } 
+                }
             second_response = MagicMock()
             second_response.json.return_value = {
                 "result": [
@@ -217,13 +220,16 @@ class TestGetWordsFromDeck:
                             "modelName": "Basic",
                             "tags": ["tag", "another_tag"],
                             "fields": {
-                                "Front": {"value": "front content", "order": 0},
+                                "Front": {
+                                    "value": "front content",
+                                    "order": 0
+                                },
                                 "Back": {"value": "back content", "order": 1}
                                 }
                             }
                         ],
-                        "error": None
-                    }
+                    "error": None
+                }
             mock_post.side_effect = [first_response, second_response]
             output = get_words_from_deck('deck_name')
             assert output == {
@@ -237,7 +243,7 @@ class TestGetWordsFromDeck:
             first_response.json.return_value = {
                 "result": [1483959289817, 1483959291695],
                 "error": None
-            } 
+            }
             second_response = MagicMock()
             second_response.json.return_value = {
                 "result": [
@@ -246,13 +252,16 @@ class TestGetWordsFromDeck:
                         "modelName": "Basic",
                         "tags": ["tag", "another_tag"],
                         "fields": {
-                            "Front": {"value": "hello: okay!!!, everybody?!", "order": 0},
+                            "Front": {
+                                "value": "hello: okay!!!, everybody?!",
+                                "order": 0
+                                },
                             "Back": {"value": "Meaning = 'hello'", "order": 1}
                             }
                         }
                     ],
-                    "error": None
-                }
+                "error": None
+            }
             mock_post.side_effect = [first_response, second_response]
             output = get_words_from_deck('deck_name')
             assert output == {'hello', 'okay', 'everybody', 'meaning'}
@@ -264,7 +273,7 @@ class TestGetWordsFromDeck:
             first_response.json.return_value = {
                 "result": [1483959289817, 1483959291695],
                 "error": None
-                } 
+                }
             second_response = MagicMock()
             second_response.json.return_value = {
                 "result": [
@@ -273,13 +282,16 @@ class TestGetWordsFromDeck:
                         "modelName": "Basic",
                         "tags": ["tag", "another_tag"],
                         "fields": {
-                            "Front": {"value": "hello<br>goodbye.", "order": 0},
+                            "Front": {
+                                "value": "hello<br>goodbye.",
+                                "order": 0
+                                },
                             "Back": {"value": "yes<br><br>no", "order": 1}
                             }
                         }
                     ],
-                    "error": None
-                }
+                "error": None
+            }
             mock_post.side_effect = [first_response, second_response]
             output = get_words_from_deck('deck_name')
             assert output == {'hello', 'goodbye', 'yes', 'no'}
