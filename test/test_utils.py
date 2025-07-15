@@ -1,12 +1,12 @@
 from src.utils import (extract_text_from_file,
-                       generate_word_list, 
-                       convert_word_list_to_csv_with_translations, 
-                       check_for_new_words, 
-                       get_user_language, 
-                       convert_word_list_to_csv, 
-                       extract_file_list, 
-                       extract_text_from_url, 
-                       extract_text_from_mkv, 
+                       generate_word_list,
+                       convert_word_list_to_csv_with_translations,
+                       check_for_new_words,
+                       get_user_language,
+                       convert_word_list_to_csv,
+                       extract_file_list,
+                       extract_text_from_url,
+                       extract_text_from_mkv,
                        list_subtitle_tracks)
 import pytest
 import csv
@@ -235,8 +235,9 @@ class TestGenerateWordList:
     def test_filters_out_punctuation(self):
         """Should ignore punctuation characters."""
         text = (
-            "The quick brown fox jumps over the lazy dog. The dog was not amused?"
-            )
+            "The quick brown fox jumps over the lazy dog."
+            " The dog was not amused?"
+        )
         assert generate_word_list(text) == {
             'amused': 1,
             'brown': 1,
@@ -250,7 +251,7 @@ class TestGenerateWordList:
             'the': 3,
             'was': 1
         }
-    
+
     def test_filters_out_additional_punctuation_characters(self):
         """Should ignore rarer punctuation characters."""
         text = (
@@ -272,12 +273,13 @@ class TestGenerateWordList:
             'que': 1,
             'quieres': 1
         }
-    
+
     def test_handles_text_in_cyrillic_script(self):
         """Should correctly count words in Cyrillic script."""
         text = 'Старик был сварливым'
-        assert generate_word_list(text) == {'старик': 1, 'был': 1, 'сварливым': 1}
-    
+        assert generate_word_list(text) == {
+            'старик': 1, 'был': 1, 'сварливым': 1}
+
     def test_ignores_whitespace_characters(self):
         """Should ignore newline or tab characters."""
         text = '''Hello\nworld\teverything\nis\tfine'''
@@ -288,13 +290,13 @@ class TestGenerateWordList:
             'is': 1,
             'fine': 1
         }
-    
+
     def test_hyphens_ignored_in_middle_of_words(self):
         """Should retain hyphens in compound words."""
         text = '''hello, first, second, físico-químico.'''
         assert generate_word_list(text) == {
             'hello': 1, 'first': 1, 'second': 1, 'físico-químico': 1}
-    
+
     def test_removes_numbers_from_word_list(self):
         """Should remove numbers from the text."""
         text = "4 foxes jumped over 2 3-year-old dogs?"
@@ -308,22 +310,25 @@ class TestConvertToCSVWithTranslations:
     def test_creates_csv_file(self, example_csv):
         """Should create a CSV file from the word list."""
         input = {'hello': 1}
-        convert_word_list_to_csv_with_translations(input, example_csv, "en", "de")
+        convert_word_list_to_csv_with_translations(
+            input, example_csv, "en", "de")
         assert example_csv.exists()
-    
+
     def test_converts_single_key_value_pair_to_csv(self, example_csv):
-        """Should correctly write a single word-frequency pair to the CSV file."""
+        """Should correctly write single word-frequency pair to CSV file."""
         input = {'hello': 1}
-        convert_word_list_to_csv_with_translations(input, example_csv, "en", "de")
+        convert_word_list_to_csv_with_translations(
+            input, example_csv, "en", "de")
         with open(example_csv, newline="") as file:
             reader = csv.reader(file)
             first_row = next(reader)
             assert first_row[0] == 'hello: 1'
-    
+
     def test_sorts_and_converts_multiple_key_value_pairs(self, example_csv):
         """Should sort words alphabetically and write them to the CSV file."""
         input = {'hello': 1, 'world': 1, 'abacus': 1}
-        convert_word_list_to_csv_with_translations(input, example_csv, "en", "de")
+        convert_word_list_to_csv_with_translations(
+            input, example_csv, "en", "de")
         with open(example_csv, newline="") as file:
             reader = csv.reader(file)
             assert next(reader)[0] == 'abacus: 1'
@@ -333,17 +338,19 @@ class TestConvertToCSVWithTranslations:
     def test_adds_translation_to_single_key_value_pair(self, example_csv):
         """Should correctly add translations for a single word."""
         input = {'hello': 1}
-        convert_word_list_to_csv_with_translations(input, example_csv, "en", "fr")
+        convert_word_list_to_csv_with_translations(
+            input, example_csv, "en", "fr")
         with open(example_csv, newline="") as file:
             reader = csv.reader(file)
             first_row = next(reader)
             assert first_row[0] == 'hello: 1'
             assert first_row[1].lower() == 'bonjour'
-    
+
     def test_adds_translations_for_multiple_words(self, example_csv):
         """Should correctly add translations for multiple words."""
         input = {'hello': 1, 'world': 1, 'abacus': 1}
-        convert_word_list_to_csv_with_translations(input, example_csv, "en", "fr")
+        convert_word_list_to_csv_with_translations(
+            input, example_csv, "en", "fr")
         with open(example_csv, newline="") as file:
             reader = csv.reader(file)
             first_row = next(reader)
@@ -366,14 +373,14 @@ class TestCheckForNewWords:
         input_set = {'word'}
         output = check_for_new_words(input_dict, input_set)
         assert output is not input_dict
-    
+
     def test_dict_unchanged_if_set_contains_no_matches(self):
         """Should return same dictionary if no words from the set match."""
         input_dict = {'hello': 1}
         input_set = {'word'}
         output = check_for_new_words(input_dict, input_set)
         assert output == {'hello': 1}
-    
+
     def test_dict_item_removed_if_match_found(self):
         """Should remove matching words from the dictionary."""
         input_dict = {'hello': 1, 'world': 1}
@@ -387,23 +394,23 @@ class TestGetUserLanguage:
     def test_returns_language_code_entered_by_user(self):
         """Should return the same language code if a valid code is entered."""
         assert get_user_language(['es']) == 'es'
-    
+
     def test_returns_language_code_if_user_enters_language_name(self):
         """Should return the same language code if a valid code is entered."""
         assert get_user_language(['spanish']) == 'es'
-    
+
     def test_ignores_capitalisation(self):
         """Should handle capitalised or uppercase language names correctly."""
         assert get_user_language(['Spanish']) == 'es'
         assert get_user_language(['ES']) == 'es'
         assert get_user_language(['SPANISH']) == 'es'
-    
+
     def test_handles_invalid_input_followed_by_valid_input(self, capsys):
-        """Should prompt again if invalid input is given, then accept valid input."""
+        """Should reject invalid input, then accept valid input."""
         assert get_user_language(['invalid', 'French']) == 'fr'
         captured = capsys.readouterr()
         assert "Invalid input." in captured.out
-    
+
     def test_available_languages_printed_upon_user_request(self, capsys):
         """Should print a list of available languages when requested."""
         assert get_user_language(['l', 'French']) == 'fr'
@@ -411,17 +418,17 @@ class TestGetUserLanguage:
         assert "Available languages: " in captured.out
         assert 'french: fr' in captured.out
         assert 'spanish: es' in captured.out
-    
+
 
 class TestConvertToCSV:
     """Tests for the convert_word_list_to_csv() function."""
-    
+
     def test_creates_csv_file(self, example_csv):
         """Should create a CSV file at the specified path."""
         input = {'hello': 1}
         convert_word_list_to_csv(input, example_csv)
         assert example_csv.exists()
-    
+
     def test_converts_single_key_value_pair_to_csv(self, example_csv):
         """Should correctly write a single word-count pair to the CSV file."""
         input = {'hello': 1}
@@ -431,9 +438,9 @@ class TestConvertToCSV:
             first_row = next(reader)
             assert first_row[0].lstrip('\ufeff') == 'hello'
             assert int(first_row[1]) == 1
-    
+
     def test_sorts_and_converts_multiple_key_value_pairs(self, example_csv):
-        """Should correctly write and sort multiple word-count pairs in the CSV file."""
+        """Should correctly sort multiple word-count pairs."""
         input = {'hello': 1, 'world': 1, 'abacus': 1}
         convert_word_list_to_csv(input, example_csv)
         with open(example_csv, newline="") as file:
@@ -447,30 +454,35 @@ class TestConvertToCSV:
             third_row = next(reader)
             assert third_row[0] == 'world'
             assert int(third_row[1]) == 1
-    
+
+
 class TestExtractFileList:
 
-    def test_extracts_single_file_from_directory(self, file_extensions, tmp_path):
+    def test_extracts_single_file_from_directory(
+            self, file_extensions, tmp_path):
         """Should correctly extract a valid file from a directory."""
         file = tmp_path / "file.txt"
         file.write_text("test")
         assert extract_file_list(tmp_path, file_extensions) == [file]
 
-    def test_extracts_multiple_files_from_directory(self, file_extensions, tmp_path):
+    def test_extracts_multiple_files_from_directory(
+            self, file_extensions, tmp_path):
         """Should correctly extract valid files from a directory."""
         file1 = tmp_path / "file1.txt"
         file1.write_text("test1")
         file2 = tmp_path / "file2.srt"
         file2.write_text("test2")
         assert extract_file_list(tmp_path, file_extensions) == [file1, file2]
-    
-    def test_ignores_files_with_invalid_formats(self, file_extensions, tmp_path):
+
+    def test_ignores_files_with_invalid_formats(
+            self, file_extensions, tmp_path):
         """Should return an empty list if file formats are invalid."""
         file1 = tmp_path / "file1.pdf"
         file1.write_text("test")
         assert extract_file_list(tmp_path, file_extensions) == []
-    
-    def test_handles_mixture_of_valid_and_invalid_files(self, file_extensions, tmp_path):
+
+    def test_handles_mixture_of_valid_and_invalid_files(
+            self, file_extensions, tmp_path):
         """Should save valid files to the list while ignoring invalid files."""
         file1 = tmp_path / "file1.pdf"
         file1.write_text("test1")
@@ -482,8 +494,8 @@ class TestExtractFileList:
         """Should raise error if an invalid directory is given."""
         with pytest.raises(ValueError) as err:
             extract_file_list("hello", file_extensions)
-        assert str(err.value) == f"Invalid directory: hello"
-    
+        assert str(err.value) == "Invalid directory: hello"
+
     def test_locates_file_in_subfolder(self, file_extensions, tmp_path):
         """Should correctly identify file located in a subfolder."""
         subfolder = tmp_path / "files"
@@ -491,6 +503,7 @@ class TestExtractFileList:
         file1 = subfolder / "test_file.txt"
         file1.write_text("test")
         assert extract_file_list(tmp_path, file_extensions)
+
 
 @pytest.fixture
 def mock_get_request():
@@ -526,6 +539,7 @@ def mock_get_request():
         mock_get.return_value = mock_response
         yield mock_get
 
+
 @pytest.fixture
 def mock_error():
     """Mocks requests.get to raise an error."""
@@ -544,7 +558,9 @@ class TestExtractTextFromUrl:
         assert "The growth figure was stronger than" in output
         assert "Liberal Democrat Treasury spokesperson" in output
         assert "predictions are highly volatile" in output
-        assert "Reeves says UK beginning to turn corner as growth beats forecasts" in output
+        assert (
+            "Reeves says UK beginning to turn corner as growth beats forecasts"
+            ) in output
 
     def test_raises_value_error_if_request_fails(self, mock_error):
         """Checks whether error is raised if URL is invalid."""
@@ -791,7 +807,7 @@ class TestListSubtitleTracks:
 
         for track in output:
             assert list(track.keys()) == ['id', 'language']
-        
+
         assert output[0]['language'] == 'English'
         assert output[1]['language'] == 'French'
         assert output[2]['language'] == 'German'
@@ -804,7 +820,7 @@ class TestListSubtitleTracks:
         with pytest.raises(ValueError) as err:
             list_subtitle_tracks("test.mkv")
         assert "An error occurred" in str(err.value)
-    
+
     def test_replaces_deprecated_language_codes(self, mock_old_codes):
         """Checks that old language codes are replaced with new ones."""
         output = list_subtitle_tracks("test.mkv")
@@ -812,13 +828,13 @@ class TestListSubtitleTracks:
         languages = [track['language'] for track in output]
 
         assert languages == [
-            'Czech', 
-            'German', 
-            'Modern Greek (1453-)', 
-            'French', 
-            'Malay (macrolanguage)', 
-            'Dutch', 
-            'Romanian', 
-            'Chinese', 
+            'Czech',
+            'German',
+            'Modern Greek (1453-)',
+            'French',
+            'Malay (macrolanguage)',
+            'Dutch',
+            'Romanian',
+            'Chinese',
             'Basque'
             ]
