@@ -27,8 +27,8 @@ def mock_anki_post():
                         }
                     }
                 ],
-                "error": None
-            }
+            "error": None
+        }
         mock_post.side_effect = [first_mock_response, second_mock_response]
         yield mock_post
 
@@ -228,8 +228,8 @@ class TestGetWordsFromDeck:
                                 }
                             }
                         ],
-                    "error": None
-                }
+                "error": None
+            }
             mock_post.side_effect = [first_response, second_response]
             output = get_words_from_deck('deck_name')
             assert output == {
