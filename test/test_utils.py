@@ -1,4 +1,13 @@
-from src.utils import extract_text_from_file, generate_word_list, convert_word_list_to_csv_with_translations, check_for_new_words, get_user_language, convert_word_list_to_csv, extract_file_list, extract_text_from_url, extract_text_from_mkv, list_subtitle_tracks 
+from src.utils import (extract_text_from_file,
+                       generate_word_list, 
+                       convert_word_list_to_csv_with_translations, 
+                       check_for_new_words, 
+                       get_user_language, 
+                       convert_word_list_to_csv, 
+                       extract_file_list, 
+                       extract_text_from_url, 
+                       extract_text_from_mkv, 
+                       list_subtitle_tracks)
 import pytest
 import csv
 import docx
@@ -17,22 +26,39 @@ def example_srt(tmp_path):
     example_srt = tmp_path / 'example.srt'
     return example_srt
 
+
 @pytest.fixture
 def example_csv(tmp_path):
     """Creates a temporary .csv file for testing."""
     example_csv = tmp_path / 'example.csv'
     return example_csv
 
+
 @pytest.fixture
 def example_text():
     """Returns an example text block for test cases."""
-    example_text = '''Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus non eros id mi volutpat faucibus. Donec id nulla non nunc iaculis egestas id vestibulum ligula. Duis auctor massa cursus volutpat venenatis. In hac habitasse platea dictumst. Aliquam sit amet laoreet dui, lobortis fermentum neque. Ut quis semper massa, a blandit quam. Duis in laoreet quam, vel facilisis orci. Aliquam at lorem non ligula gravida rhoncus. In eu suscipit lectus. Suspendisse potenti. Duis porta libero orci, id lacinia libero finibus sit amet. Donec nec magna ut ex hendrerit suscipit. In enim quam, aliquam a orci quis, volutpat vestibulum urna. Integer euismod nec diam ac congue. In sit amet sem tortor.'''
+    example_text = (
+        'Lorem ipsum dolor sit amet, consectetur adipiscing elit.'
+        ' Vivamus non eros id mi volutpat faucibus. '
+        'Donec id nulla non nunc iaculis egestas id vestibulum ligula.'
+        ' Duis auctor massa cursus volutpat venenatis. '
+        'In hac habitasse platea dictumst. Aliquam sit amet laoreet dui,'
+        ' lobortis fermentum neque. Ut quis semper massa, a blandit quam.'
+        ' Duis in laoreet quam, vel facilisis orci. '
+        'Aliquam at lorem non ligula gravida rhoncus. '
+        'In eu suscipit lectus. Suspendisse potenti. '
+        'Duis porta libero orci, id lacinia libero finibus sit amet. '
+        'Donec nec magna ut ex hendrerit suscipit. '
+        'In enim quam, aliquam a orci quis, volutpat vestibulum urna. '
+        'Integer euismod nec diam ac congue. In sit amet sem tortor.')
     return example_text
+
 
 @pytest.fixture
 def file_extensions():
     """Creates a list of valid file extensions."""
     return ['.srt', '.txt', '.md']
+
 
 class TestExtractTextFromFile:
     """Tests for the extract_text_from_file() function in utils.py"""
@@ -47,7 +73,7 @@ class TestExtractTextFromFile:
         expected = '''Hello!\n\nHello!'''
         output = extract_text_from_file(example_srt)
         assert output == expected
-    
+
     def test_removes_italic_markers(self, example_srt):
         """Ensures that italic markers are correctly removed from SRT files."""
         example_srt.write_text('''5
@@ -56,16 +82,20 @@ class TestExtractTextFromFile:
         expected = '''Good morning, Refiners.'''
         output = extract_text_from_file(example_srt)
         assert output == expected
-    
+
     def test_handles_multiple_lines_of_text(self, example_srt):
-        """Checks that multiline text remains properly formatted after processing."""
-        example_srt.write_text('''6
-                                00:04:33,232 --> 00:04:36,359
-                                <i>This is Mr. Milchick from work,\nand I'm thrilled to welcome you</i>''')
-        expected = '''This is Mr. Milchick from work,\nand I'm thrilled to welcome you'''
+        """Checks that multiline text remains formatted after processing."""
+        example_srt.write_text(
+            '''6
+            00:04:33,232 --> 00:04:36,359
+            <i>This is Mr. Milchick from work,\nand I'm thrilled to welcome you</i>'''
+        )
+        expected = (
+            "This is Mr. Milchick from work,\nand I'm thrilled to welcome you"
+            )
         output = extract_text_from_file(example_srt)
         assert output == expected
-    
+
     def test_removes_any_other_html_tags(self, example_srt):
         """Ensures that all HTML tags are correctly removed from SRT files."""
         example_srt.write_text('''5
@@ -74,27 +104,32 @@ class TestExtractTextFromFile:
         expected = '''Good morning, Refiners.'''
         output = extract_text_from_file(example_srt)
         assert output == expected
-    
-    def test_text_unchanged_if_no_timestamps_or_html_tags(self, example_srt, example_text):
-        """Checks that text is returned unchanged if there are no timestamps or HTML tags."""
+
+    def test_text_unchanged_if_no_timestamps_or_html_tags(
+            self, example_srt, example_text):
+        """Checks text is returned unchanged if no timestamps or HTML tags."""
         example_srt.write_text(example_text)
         output = extract_text_from_file(example_srt)
         assert example_srt.read_text() == example_text
         assert output == example_text
-    
+
     def test_error_message_returned_if_filepath_invalid(self):
         """Ensures that a FileNotFoundError is raised for nonexistent files."""
         with pytest.raises(FileNotFoundError) as err:
             extract_text_from_file('example1.srt')
-        assert str(err.value) == "Error: The file 'example1.srt' was not found."
-    
+        assert str(err.value) == (
+            "Error: The file 'example1.srt' was not found.")
+
     def test_IO_error_occurs_if_file_format_is_invalid(self, tmp_path):
-        """Tests that an IOError is raised when an unsupported file format is used."""
+        """Checks IOError raised when unsupported file format used."""
         example_mkv = tmp_path / 'example.mkv'
         example_mkv.touch()
         with pytest.raises(IOError) as err:
             extract_text_from_file(example_mkv)
-        assert str(err.value) == "Error: Could not read the file contents of 'example.mkv'. File format is invalid."
+        assert str(err.value) == (
+            "Error: Could not read the file contents of 'example.mkv'. "
+            "File format is invalid."
+            )
 
     def test_blank_document_remains_unchanged(self, example_srt):
         """Checks that a file with no content remains unchanged."""
@@ -102,13 +137,13 @@ class TestExtractTextFromFile:
         output = extract_text_from_file(example_srt)
         assert not example_srt.read_text()
         assert not output
-    
+
     def test_handles_md_files(self, tmp_path):
         """Checks that md file can be successfully processed."""
         example_md = tmp_path / 'example.md'
         example_md.write_text("example text")
         assert extract_text_from_file(example_md) == "example text"
-    
+
     def test_handles_docx_files(self, tmp_path):
         """Checks that docx files can be successfully processed."""
         example_docx = tmp_path / 'example.docx'
@@ -116,15 +151,15 @@ class TestExtractTextFromFile:
         doc.add_paragraph("here is some text")
         doc.save(example_docx)
         assert extract_text_from_file(example_docx) == "here is some text"
-    
+
     def test_removes_unwanted_formatting_from_docx_files(self, tmp_path):
-        """Checks that unwanted formatting artifacts are removed from docx files."""
+        """Checks unwanted formatting artifacts are removed from docx files."""
         example_docx = tmp_path / 'example.docx'
         doc = docx.Document()
         doc.add_paragraph(r"here is \an8}some text")
         doc.save(example_docx)
         assert extract_text_from_file(example_docx) == "here is some text"
-    
+
     def test_handles_pdf_files(self, tmp_path):
         """Checks that pdf files can be successfully processed."""
 
@@ -138,7 +173,7 @@ class TestExtractTextFromFile:
         create_pdf(test_pdf, example_text)
 
         assert example_text in extract_text_from_file(test_pdf)
-    
+
     def test_handles_epub_files(self, tmp_path):
         """Checks that epub files can be successfully processed."""
 
@@ -160,7 +195,7 @@ class TestExtractTextFromFile:
 
         epub.write_epub(str(epub_path), test_epub)
 
-        assert "here is some text" in extract_text_from_file(epub_path)       
+        assert "here is some text" in extract_text_from_file(epub_path)
         assert "and now some more text" in extract_text_from_file(epub_path)
 
 
@@ -180,28 +215,63 @@ class TestGenerateWordList:
         """Should count occurrences of a single word correctly."""
         output = generate_word_list('hello')
         assert output == {'hello': 1}
-    
+
     def test_counts_multiple_words(self):
         """Should count occurrences of multiple words correctly."""
         assert generate_word_list('hello world') == {'hello': 1, 'world': 1}
-    
+
     def test_counts_multiple_instances_of_same_word(self):
         """Should correctly count multiple occurrences of the same word."""
-        assert generate_word_list('hello world hello') == {'hello': 2, 'world': 1}
+        assert generate_word_list('hello world hello') == {
+            'hello': 2, 'world': 1
+        }
 
     def test_ignores_capital_letters(self):
         """Should treat uppercase and lowercase words the same."""
-        assert generate_word_list('Hello world hello') == {'hello': 2, 'world': 1}
+        assert generate_word_list('Hello world hello') == {
+            'hello': 2, 'world': 1
+        }
 
     def test_filters_out_punctuation(self):
         """Should ignore punctuation characters."""
-        text = "The quick brown fox jumps over the lazy dog. The dog was not amused?"
-        assert generate_word_list(text) == {'amused': 1, 'brown': 1, 'dog': 2, 'fox': 1, 'jumps': 1, 'lazy': 1, 'not': 1, 'over': 1, 'quick': 1, 'the': 3, 'was': 1}
+        text = (
+            "The quick brown fox jumps over the lazy dog. The dog was not amused?"
+            )
+        assert generate_word_list(text) == {
+            'amused': 1,
+            'brown': 1,
+            'dog': 2,
+            'fox': 1,
+            'jumps': 1,
+            'lazy': 1,
+            'not': 1,
+            'over': 1,
+            'quick': 1,
+            'the': 3,
+            'was': 1
+        }
     
     def test_filters_out_additional_punctuation_characters(self):
-        """Should ignore rarer punctuation characters such as tags or Spanish-specific question marks."""
-        text = '''¿Sueles leer «antes» de dormir? Al principio: <Si trabajas duro, conseguirás lo que quieres.>>'''
-        assert generate_word_list(text) == {'sueles': 1, 'leer': 1, 'antes': 1, 'de': 1, 'dormir': 1, 'al': 1, 'principio': 1, 'si': 1, 'trabajas': 1, 'duro': 1, 'conseguirás': 1, 'lo': 1, 'que': 1, 'quieres': 1}
+        """Should ignore rarer punctuation characters."""
+        text = (
+            "¿Sueles leer «antes» de dormir? Al principio: "
+            "<Si trabajas duro, conseguirás lo que quieres.>>")
+        assert generate_word_list(text) == {
+            'sueles': 1,
+            'leer': 1,
+            'antes': 1,
+            'de': 1,
+            'dormir': 1,
+            'al': 1,
+            'principio': 1,
+            'si': 1,
+            'trabajas': 1,
+            'duro': 1,
+            'conseguirás': 1,
+            'lo': 1,
+            'que': 1,
+            'quieres': 1
+        }
     
     def test_handles_text_in_cyrillic_script(self):
         """Should correctly count words in Cyrillic script."""
@@ -211,21 +281,29 @@ class TestGenerateWordList:
     def test_ignores_whitespace_characters(self):
         """Should ignore newline or tab characters."""
         text = '''Hello\nworld\teverything\nis\tfine'''
-        assert generate_word_list(text) == {'hello': 1, 'world': 1, 'everything': 1, 'is': 1, 'fine': 1}
+        assert generate_word_list(text) == {
+            'hello': 1,
+            'world': 1,
+            'everything': 1,
+            'is': 1,
+            'fine': 1
+        }
     
     def test_hyphens_ignored_in_middle_of_words(self):
         """Should retain hyphens in compound words."""
         text = '''hello, first, second, físico-químico.'''
-        assert generate_word_list(text) == {'hello': 1, 'first': 1, 'second': 1, 'físico-químico': 1}
+        assert generate_word_list(text) == {
+            'hello': 1, 'first': 1, 'second': 1, 'físico-químico': 1}
     
     def test_removes_numbers_from_word_list(self):
         """Should remove numbers from the text."""
         text = "4 foxes jumped over 2 3-year-old dogs?"
-        assert generate_word_list(text) == {'foxes': 1, 'jumped': 1, 'over': 1, '3-year-old': 1, 'dogs': 1}
+        assert generate_word_list(text) == {
+            'foxes': 1, 'jumped': 1, 'over': 1, '3-year-old': 1, 'dogs': 1}
 
 
 class TestConvertToCSVWithTranslations:
-    """Tests for the convert_word_list_to_csv_with_translations() function in utils.py."""
+    """Tests for the convert_word_list_to_csv_with_translations() function."""
 
     def test_creates_csv_file(self, example_csv):
         """Should create a CSV file from the word list."""
@@ -278,18 +356,19 @@ class TestConvertToCSVWithTranslations:
             assert third_row[0] == 'world: 1'
             assert third_row[1].lower() == 'monde'
 
+
 class TestCheckForNewWords:
     """Tests for the check_for_new_words() function."""
 
     def test_returns_new_dict(self):
-        """Should return a new dictionary object instead of modifying the original."""
+        """Should return a new dictionary object."""
         input_dict = {'hello': 1}
         input_set = {'word'}
         output = check_for_new_words(input_dict, input_set)
         assert output is not input_dict
     
     def test_dict_unchanged_if_set_contains_no_matches(self):
-        """Should return the same dictionary if no words from the set match."""
+        """Should return same dictionary if no words from the set match."""
         input_dict = {'hello': 1}
         input_set = {'word'}
         output = check_for_new_words(input_dict, input_set)
@@ -300,6 +379,7 @@ class TestCheckForNewWords:
         input_dict = {'hello': 1, 'world': 1}
         input_set = {'world'}
         assert check_for_new_words(input_dict, input_set) == {'hello': 1}
+
 
 class TestGetUserLanguage:
     """Tests for the get_user_language() function."""
@@ -405,7 +485,7 @@ class TestExtractFileList:
         assert str(err.value) == f"Invalid directory: hello"
     
     def test_locates_file_in_subfolder(self, file_extensions, tmp_path):
-        """Should correctly identify file located in a subfolder of the given directory."""
+        """Should correctly identify file located in a subfolder."""
         subfolder = tmp_path / "files"
         subfolder.mkdir()
         file1 = subfolder / "test_file.txt"
