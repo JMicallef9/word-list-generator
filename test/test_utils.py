@@ -576,7 +576,7 @@ class TestExtractTextFromUrl:
 
         with pytest.raises(ValueError) as err:
             extract_text_from_url("www.invalid-url.com")
-        assert str(err.value) == "Text extraction failed. URL may be invalid." 
+        assert str(err.value) == "Text extraction failed. URL may be invalid."
 
 
 @pytest.fixture
