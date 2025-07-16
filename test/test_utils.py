@@ -509,37 +509,39 @@ class TestExtractFileList:
 @pytest.fixture
 def mock_get_request():
     """Creates a test response body."""
+    content = textwrap.dedent("""\
+        <html>
+            <body>
+                <article class="ssrcss-z9afcx-ArticleWrapper e1nh2i2l3">
+                    <header data-component="headline-block"
+                            class="ssrcss-bwbna7-ComponentWrapper-HeadlineComponentWrapper egtrm1f0">
+                        <h1 id="main-heading" type="headline" tabindex="-1"
+                            class="ssrcss-1s9pby4-Heading e10rt3ze0">
+                            <span role="text">
+                                Reeves says UK beginning to turn corner as growth beats
+                                forecasts
+                            </span>
+                        </h1>
+                    </header>
+                    <div class="ssrcss-1w03aro-RichTextComponentWrapper ep2nwvo0">
+                        <p class="ssrcss-1q0x1qg-Paragraph ejhz7w10">
+                            <b>The growth figure was stronger than</b>
+                        </p>
+                        <p class="ssrcss-1q0x1qg-Paragraph ejhz7w10">
+                            Liberal Democrat Treasury spokesperson
+                        </p>
+                        <p class="ssrcss-1q0x1qg-Paragraph ejhz7w10">
+                            predictions are highly volatile
+                        </p>
+                    </div>
+                </article>
+            </body>
+        </html>
+    """)
+
     with patch("requests.get") as mock_get:
         mock_response = Mock()
-        mock_response.content = textwrap.dedent("""\
-            <html>
-                <body>
-                    <article class="ssrcss-z9afcx-ArticleWrapper e1nh2i2l3">
-                        <header data-component="headline-block"
-                                class="ssrcss-bwbna7-ComponentWrapper-HeadlineComponentWrapper egtrm1f0">
-                            <h1 id="main-heading" type="headline" tabindex="-1"
-                                class="ssrcss-1s9pby4-Heading e10rt3ze0">
-                                <span role="text">
-                                    Reeves says UK beginning to turn corner as growth beats
-                                    forecasts
-                                </span>
-                            </h1>
-                        </header>
-                        <div class="ssrcss-1w03aro-RichTextComponentWrapper ep2nwvo0">
-                            <p class="ssrcss-1q0x1qg-Paragraph ejhz7w10">
-                                <b>The growth figure was stronger than</b>
-                            </p>
-                            <p class="ssrcss-1q0x1qg-Paragraph ejhz7w10">
-                                Liberal Democrat Treasury spokesperson
-                            </p>
-                            <p class="ssrcss-1q0x1qg-Paragraph ejhz7w10">
-                                predictions are highly volatile
-                            </p>
-                        </div>
-                    </article>
-                </body>
-            </html>
-        """).encode("utf-8")
+        mock_response.content = content.encode("utf-8")
         mock_get.return_value = mock_response
         yield mock_get
 
@@ -571,7 +573,7 @@ class TestExtractTextFromUrl:
 
         with pytest.raises(ValueError) as err:
             extract_text_from_url("www.invalid-url.com")
-        assert str(err.value) == "Text extraction failed. URL may be invalid."       
+        assert str(err.value) == "Text extraction failed. URL may be invalid."     
 
 
 @pytest.fixture
@@ -630,54 +632,54 @@ def mock_mkvmerge():
                 "is_providing_timestamps": True
                 }
             },
-            "tracks": [
-                {
-                    "id": 0,
-                    "type": "video",
-                    "codec": "V_MPEG4/ISO/AVC",
-                    "properties": {
-                        "codec_id": "V_MPEG4/ISO/AVC",
-                        "language": "und"
-                    }
-                },
-                {
-                    "id": 1,
-                    "type": "audio",
-                    "codec": "A_AAC",
-                    "properties": {
-                        "codec_id": "A_AAC",
-                        "language": "eng"
-                    }
-                },
-                {
-                    "id": 2,
-                    "type": "subtitles",
-                    "codec": "S_TEXT/UTF8",
-                    "properties": {
-                        "codec_id": "S_TEXT/UTF8",
-                        "language": "eng"
-                    }
-                },
-                {
-                    "id": 3,
-                    "type": "subtitles",
-                    "codec": "S_TEXT/UTF8",
-                    "properties": {
-                        "codec_id": "S_TEXT/UTF8",
-                        "language": "fra"
-                    }
-                },
-                {
-                    "id": 4,
-                    "type": "subtitles",
-                    "codec": "S_TEXT/UTF8",
-                    "properties": {
-                        "codec_id": "S_TEXT/UTF8",
-                        "language": "deu"
-                    }
+        "tracks": [
+            {
+                "id": 0,
+                "type": "video",
+                "codec": "V_MPEG4/ISO/AVC",
+                "properties": {
+                    "codec_id": "V_MPEG4/ISO/AVC",
+                    "language": "und"
                 }
-            ]
-        }
+            },
+            {
+                "id": 1,
+                "type": "audio",
+                "codec": "A_AAC",
+                "properties": {
+                    "codec_id": "A_AAC",
+                    "language": "eng"
+                }
+            },
+            {
+                "id": 2,
+                "type": "subtitles",
+                "codec": "S_TEXT/UTF8",
+                "properties": {
+                    "codec_id": "S_TEXT/UTF8",
+                    "language": "eng"
+                }
+            },
+            {
+                "id": 3,
+                "type": "subtitles",
+                "codec": "S_TEXT/UTF8",
+                "properties": {
+                    "codec_id": "S_TEXT/UTF8",
+                    "language": "fra"
+                }
+            },
+            {
+                "id": 4,
+                "type": "subtitles",
+                "codec": "S_TEXT/UTF8",
+                "properties": {
+                    "codec_id": "S_TEXT/UTF8",
+                    "language": "deu"
+                }
+            }
+        ]
+    }
 
     with patch("subprocess.run") as mock_subp:
         mock_subp.return_value = subprocess.CompletedProcess(
@@ -709,90 +711,90 @@ def mock_old_codes():
                 "is_providing_timestamps": True
                 }
             },
-            "tracks": [
-                {
-                    "id": 2,
-                    "type": "subtitles",
-                    "codec": "S_TEXT/UTF8",
-                    "properties": {
-                        "codec_id": "S_TEXT/UTF8",
-                        "language": "cze"
-                    }
-                },
-                {
-                    "id": 3,
-                    "type": "subtitles",
-                    "codec": "S_TEXT/UTF8",
-                    "properties": {
-                        "codec_id": "S_TEXT/UTF8",
-                        "language": "ger"
-                    }
-                },
-                {
-                    "id": 4,
-                    "type": "subtitles",
-                    "codec": "S_TEXT/UTF8",
-                    "properties": {
-                        "codec_id": "S_TEXT/UTF8",
-                        "language": "gre"
-                    }
-                },
-                {
-                    "id": 5,
-                    "type": "subtitles",
-                    "codec": "S_TEXT/UTF8",
-                    "properties": {
-                        "codec_id": "S_TEXT/UTF8",
-                        "language": "fre"
-                    }
-                },
-                {
-                    "id": 6,
-                    "type": "subtitles",
-                    "codec": "S_TEXT/UTF8",
-                    "properties": {
-                        "codec_id": "S_TEXT/UTF8",
-                        "language": "may"
-                    }
-                },
-                {
-                    "id": 7,
-                    "type": "subtitles",
-                    "codec": "S_TEXT/UTF8",
-                    "properties": {
-                        "codec_id": "S_TEXT/UTF8",
-                        "language": "dut"
-                    }
-                },
-                {
-                    "id": 8,
-                    "type": "subtitles",
-                    "codec": "S_TEXT/UTF8",
-                    "properties": {
-                        "codec_id": "S_TEXT/UTF8",
-                        "language": "rum"
-                    }
-                },
-                {
-                    "id": 9,
-                    "type": "subtitles",
-                    "codec": "S_TEXT/UTF8",
-                    "properties": {
-                        "codec_id": "S_TEXT/UTF8",
-                        "language": "chi"
-                    }
-                },
-                {
-                    "id": 10,
-                    "type": "subtitles",
-                    "codec": "S_TEXT/UTF8",
-                    "properties": {
-                        "codec_id": "S_TEXT/UTF8",
-                        "language": "baq"
-                    }
+        "tracks": [
+            {
+                "id": 2,
+                "type": "subtitles",
+                "codec": "S_TEXT/UTF8",
+                "properties": {
+                    "codec_id": "S_TEXT/UTF8",
+                    "language": "cze"
                 }
-            ]
-        }
+            },
+            {
+                "id": 3,
+                "type": "subtitles",
+                "codec": "S_TEXT/UTF8",
+                "properties": {
+                    "codec_id": "S_TEXT/UTF8",
+                    "language": "ger"
+                }
+            },
+            {
+                "id": 4,
+                "type": "subtitles",
+                "codec": "S_TEXT/UTF8",
+                "properties": {
+                    "codec_id": "S_TEXT/UTF8",
+                    "language": "gre"
+                }
+            },
+            {
+                "id": 5,
+                "type": "subtitles",
+                "codec": "S_TEXT/UTF8",
+                "properties": {
+                    "codec_id": "S_TEXT/UTF8",
+                    "language": "fre"
+                }
+            },
+            {
+                "id": 6,
+                "type": "subtitles",
+                "codec": "S_TEXT/UTF8",
+                "properties": {
+                    "codec_id": "S_TEXT/UTF8",
+                    "language": "may"
+                }
+            },
+            {
+                "id": 7,
+                "type": "subtitles",
+                "codec": "S_TEXT/UTF8",
+                "properties": {
+                    "codec_id": "S_TEXT/UTF8",
+                    "language": "dut"
+                }
+            },
+            {
+                "id": 8,
+                "type": "subtitles",
+                "codec": "S_TEXT/UTF8",
+                "properties": {
+                    "codec_id": "S_TEXT/UTF8",
+                    "language": "rum"
+                }
+            },
+            {
+                "id": 9,
+                "type": "subtitles",
+                "codec": "S_TEXT/UTF8",
+                "properties": {
+                    "codec_id": "S_TEXT/UTF8",
+                    "language": "chi"
+                }
+            },
+            {
+                "id": 10,
+                "type": "subtitles",
+                "codec": "S_TEXT/UTF8",
+                "properties": {
+                    "codec_id": "S_TEXT/UTF8",
+                    "language": "baq"
+                }
+            }
+        ]
+    }
 
     with patch("subprocess.run") as mock_subp:
         mock_subp.return_value = subprocess.CompletedProcess(
