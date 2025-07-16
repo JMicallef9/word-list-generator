@@ -515,16 +515,18 @@ def mock_get_request():
             <article class="ssrcss-z9afcx-ArticleWrapper e1nh2i2l3">
                 <header
                     data-component="headline-block"
-                    class="ssrcss-bwbna7-ComponentWrapper-HeadlineComponentWrapper egtrm1f0">
+                    class="ssrcss-bwbna7-ComponentWrapper-
+                    HeadlineComponentWrapper egtrm1f0">
                     <h1 id="main-heading" type="headline" tabindex="-1"
                         class="ssrcss-1s9pby4-Heading e10rt3ze0">
                         <span role="text">
-                            Reeves says UK beginning to turn corner as growth beats
-                            forecasts
+                            Reeves says UK beginning to turn corner
+                            as growth beats forecasts
                         </span>
                     </h1>
                 </header>
-                    <div class="ssrcss-1w03aro-RichTextComponentWrapper ep2nwvo0">
+                    <div class="ssrcss-1w03aro-
+                        RichTextComponentWrapper ep2nwvo0">
                         <p class="ssrcss-1q0x1qg-Paragraph ejhz7w10">
                             <b>The growth figure was stronger than</b>
                         </p>
@@ -574,7 +576,7 @@ class TestExtractTextFromUrl:
 
         with pytest.raises(ValueError) as err:
             extract_text_from_url("www.invalid-url.com")
-        assert str(err.value) == "Text extraction failed. URL may be invalid."     
+        assert str(err.value) == "Text extraction failed. URL may be invalid." 
 
 
 @pytest.fixture
@@ -586,8 +588,10 @@ def mock_mkv_subs(tmp_path):
         00:04:33,232 --> 00:04:36,359
         <i>This is Mr. Milchick,\nand I'm thrilled to welcome you</i>''')
 
-    with patch("tempfile.NamedTemporaryFile") as mock_temp, \
-    patch("subprocess.run") as mock_subp:
+    with (
+        patch("tempfile.NamedTemporaryFile") as mock_temp,
+        patch("subprocess.run") as mock_subp
+    ):
         mock_temp.return_value.__enter__.return_value.name = str(example_srt)
         yield {
             "mock_temp": mock_temp,
