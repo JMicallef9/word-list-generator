@@ -473,7 +473,8 @@ class TestExtractFileList:
         file1.write_text("test1")
         file2 = tmp_path / "file2.srt"
         file2.write_text("test2")
-        assert extract_file_list(tmp_path, file_extensions) == [file1, file2]
+        output = extract_file_list(tmp_path, file_extensions)
+        assert set(output) == {file1, file2}
 
     def test_ignores_files_with_invalid_formats(
             self, file_extensions, tmp_path):
