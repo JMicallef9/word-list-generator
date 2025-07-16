@@ -510,19 +510,20 @@ class TestExtractFileList:
 def mock_get_request():
     """Creates a test response body."""
     content = textwrap.dedent("""\
-        <html>
-            <body>
-                <article class="ssrcss-z9afcx-ArticleWrapper e1nh2i2l3">
-                    <header data-component="headline-block"
-                            class="ssrcss-bwbna7-ComponentWrapper-HeadlineComponentWrapper egtrm1f0">
-                        <h1 id="main-heading" type="headline" tabindex="-1"
-                            class="ssrcss-1s9pby4-Heading e10rt3ze0">
-                            <span role="text">
-                                Reeves says UK beginning to turn corner as growth beats
-                                forecasts
-                            </span>
-                        </h1>
-                    </header>
+    <html>
+        <body>
+            <article class="ssrcss-z9afcx-ArticleWrapper e1nh2i2l3">
+                <header
+                    data-component="headline-block"
+                    class="ssrcss-bwbna7-ComponentWrapper-HeadlineComponentWrapper egtrm1f0">
+                    <h1 id="main-heading" type="headline" tabindex="-1"
+                        class="ssrcss-1s9pby4-Heading e10rt3ze0">
+                        <span role="text">
+                            Reeves says UK beginning to turn corner as growth beats
+                            forecasts
+                        </span>
+                    </h1>
+                </header>
                     <div class="ssrcss-1w03aro-RichTextComponentWrapper ep2nwvo0">
                         <p class="ssrcss-1q0x1qg-Paragraph ejhz7w10">
                             <b>The growth figure was stronger than</b>
