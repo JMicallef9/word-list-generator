@@ -18,6 +18,7 @@ from ebooklib import epub
 from pathlib import Path
 import subprocess
 import json
+import textwrap
 
 
 @pytest.fixture
@@ -88,10 +89,10 @@ class TestExtractTextFromFile:
         example_srt.write_text(
             '''6
             00:04:33,232 --> 00:04:36,359
-            <i>This is Mr. Milchick from work,\nand I'm thrilled to welcome you</i>'''
+            <i>This is Mr. Milchick,\nand I'm thrilled to welcome you</i>'''
         )
         expected = (
-            "This is Mr. Milchick from work,\nand I'm thrilled to welcome you"
+            "This is Mr. Milchick,\nand I'm thrilled to welcome you"
             )
         output = extract_text_from_file(example_srt)
         assert output == expected
@@ -510,32 +511,35 @@ def mock_get_request():
     """Creates a test response body."""
     with patch("requests.get") as mock_get:
         mock_response = Mock()
-        mock_response.content = b"""
-        <html>
-            <body>
-                <article class="ssrcss-z9afcx-ArticleWrapper e1nh2i2l3">
-                    <header data-component="headline-block" class="ssrcss-bwbna7-ComponentWrapper-HeadlineComponentWrapper egtrm1f0">
-                        <h1 id="main-heading" type="headline" tabindex="-1" class="ssrcss-1s9pby4-Heading e10rt3ze0">
-                            <span role="text">
-                                Reeves says UK beginning to turn corner as growth beats forecasts
-                            </span>
-                        </h1>
-                    </header>
-                    <div class="ssrcss-1w03aro-RichTextComponentWrapper ep2nwvo0">
-                        <p class="ssrcss-1q0x1qg-Paragraph ejhz7w10">
-                            <b>The growth figure was stronger than</b>
-                        </p>
-                        <p class="ssrcss-1q0x1qg-Paragraph ejhz7w10">
-                            Liberal Democrat Treasury spokesperson
-                        </p>
-                        <p class="ssrcss-1q0x1qg-Paragraph ejhz7w10">
-                            predictions are highly volatile
-                        </p>
-                    </div>
-                </article>
-            </body>
-        </html>
-        """
+        mock_response.content = textwrap.dedent("""\
+            <html>
+                <body>
+                    <article class="ssrcss-z9afcx-ArticleWrapper e1nh2i2l3">
+                        <header data-component="headline-block"
+                                class="ssrcss-bwbna7-ComponentWrapper-HeadlineComponentWrapper egtrm1f0">
+                            <h1 id="main-heading" type="headline" tabindex="-1"
+                                class="ssrcss-1s9pby4-Heading e10rt3ze0">
+                                <span role="text">
+                                    Reeves says UK beginning to turn corner as growth beats
+                                    forecasts
+                                </span>
+                            </h1>
+                        </header>
+                        <div class="ssrcss-1w03aro-RichTextComponentWrapper ep2nwvo0">
+                            <p class="ssrcss-1q0x1qg-Paragraph ejhz7w10">
+                                <b>The growth figure was stronger than</b>
+                            </p>
+                            <p class="ssrcss-1q0x1qg-Paragraph ejhz7w10">
+                                Liberal Democrat Treasury spokesperson
+                            </p>
+                            <p class="ssrcss-1q0x1qg-Paragraph ejhz7w10">
+                                predictions are highly volatile
+                            </p>
+                        </div>
+                    </article>
+                </body>
+            </html>
+        """).encode("utf-8")
         mock_get.return_value = mock_response
         yield mock_get
 
@@ -559,7 +563,7 @@ class TestExtractTextFromUrl:
         assert "Liberal Democrat Treasury spokesperson" in output
         assert "predictions are highly volatile" in output
         assert (
-            "Reeves says UK beginning to turn corner as growth beats forecasts"
+            "Reeves says UK beginning to turn corner"
             ) in output
 
     def test_raises_value_error_if_request_fails(self, mock_error):
@@ -567,19 +571,20 @@ class TestExtractTextFromUrl:
 
         with pytest.raises(ValueError) as err:
             extract_text_from_url("www.invalid-url.com")
-        assert str(err.value) == "Text extraction failed. URL may be invalid."        
+        assert str(err.value) == "Text extraction failed. URL may be invalid."       
 
 
 @pytest.fixture
 def mock_mkv_subs(tmp_path):
     """Creates a mock subprocess on an .srt file."""
     example_srt = tmp_path / "example.srt"
-    example_srt.write_text('''6
-                                00:04:33,232 --> 00:04:36,359
-                                <i>This is Mr. Milchick from work,\nand I'm thrilled to welcome you</i>''')
+    example_srt.write_text(
+        '''6
+        00:04:33,232 --> 00:04:36,359
+        <i>This is Mr. Milchick,\nand I'm thrilled to welcome you</i>''')
 
     with patch("tempfile.NamedTemporaryFile") as mock_temp, \
-        patch("subprocess.run") as mock_subp:
+    patch("subprocess.run") as mock_subp:
         mock_temp.return_value.__enter__.return_value.name = str(example_srt)
         yield {
             "mock_temp": mock_temp,
@@ -587,12 +592,13 @@ def mock_mkv_subs(tmp_path):
             "temp_path": str(example_srt)
             }
 
+
 class TestExtractTextFromMkv:
     """Tests for the extract_text_from_mkv function."""
 
     def test_extracts_text_correctly(self, mock_mkv_subs):
         """Checks that text is successfully extracted by the function."""
-        expected = '''This is Mr. Milchick from work,\nand I'm thrilled to welcome you'''
+        expected = "This is Mr. Milchick,\nand I'm thrilled to welcome you"
 
         assert extract_text_from_mkv("test.mkv", 2) == expected
 
@@ -613,6 +619,7 @@ class TestExtractTextFromMkv:
 
         assert not Path(mock_mkv_subs["temp_path"]).exists()
 
+
 @pytest.fixture
 def mock_mkvmerge():
     """Creates mock JSON output from an mkvmerge -J command."""
@@ -621,55 +628,56 @@ def mock_mkvmerge():
             "type": "Matroska",
             "properties": {
                 "is_providing_timestamps": True
-                }},
-                "tracks": [
-                    {
-                        "id": 0,
-                        "type": "video",
-                        "codec": "V_MPEG4/ISO/AVC",
-                        "properties": {
-                            "codec_id": "V_MPEG4/ISO/AVC",
-                            "language": "und"
-                                    }
-                    },
-                    {
-                        "id": 1,
-                        "type": "audio",
-                        "codec": "A_AAC",
-                        "properties": {
-                            "codec_id": "A_AAC",
-                            "language": "eng"
-                            }
-                    },
-                    {
-                        "id": 2,
-                        "type": "subtitles",
-                        "codec": "S_TEXT/UTF8",
-                        "properties": {
-                            "codec_id": "S_TEXT/UTF8",
-                            "language": "eng"
-                            }
-                    },
-                    {
-                        "id": 3,
-                        "type": "subtitles",
-                        "codec": "S_TEXT/UTF8",
-                        "properties": {
-                            "codec_id": "S_TEXT/UTF8",
-                            "language": "fra"
+                }
+            },
+            "tracks": [
+                {
+                    "id": 0,
+                    "type": "video",
+                    "codec": "V_MPEG4/ISO/AVC",
+                    "properties": {
+                        "codec_id": "V_MPEG4/ISO/AVC",
+                        "language": "und"
                     }
-                    },
-                    {
-                        "id": 4,
-                        "type": "subtitles",
-                        "codec": "S_TEXT/UTF8",
-                        "properties": {
-                            "codec_id": "S_TEXT/UTF8",
-                            "language": "deu"
-                        }
+                },
+                {
+                    "id": 1,
+                    "type": "audio",
+                    "codec": "A_AAC",
+                    "properties": {
+                        "codec_id": "A_AAC",
+                        "language": "eng"
                     }
-                ]
-            }
+                },
+                {
+                    "id": 2,
+                    "type": "subtitles",
+                    "codec": "S_TEXT/UTF8",
+                    "properties": {
+                        "codec_id": "S_TEXT/UTF8",
+                        "language": "eng"
+                    }
+                },
+                {
+                    "id": 3,
+                    "type": "subtitles",
+                    "codec": "S_TEXT/UTF8",
+                    "properties": {
+                        "codec_id": "S_TEXT/UTF8",
+                        "language": "fra"
+                    }
+                },
+                {
+                    "id": 4,
+                    "type": "subtitles",
+                    "codec": "S_TEXT/UTF8",
+                    "properties": {
+                        "codec_id": "S_TEXT/UTF8",
+                        "language": "deu"
+                    }
+                }
+            ]
+        }
 
     with patch("subprocess.run") as mock_subp:
         mock_subp.return_value = subprocess.CompletedProcess(
@@ -678,6 +686,7 @@ def mock_mkvmerge():
             stdout=json.dumps(mock_json)
         )
         yield mock_subp
+
 
 @pytest.fixture
 def mkvmerge_error():
@@ -689,6 +698,7 @@ def mkvmerge_error():
         )
         yield mock_subp
 
+
 @pytest.fixture
 def mock_old_codes():
     """Creates mock JSON output with deprecated language codes."""
@@ -697,91 +707,92 @@ def mock_old_codes():
             "type": "Matroska",
             "properties": {
                 "is_providing_timestamps": True
-                }},
-                "tracks": [
-                    {
-                        "id": 2,
-                        "type": "subtitles",
-                        "codec": "S_TEXT/UTF8",
-                        "properties": {
-                            "codec_id": "S_TEXT/UTF8",
-                            "language": "cze"
-                            }
-                    },
-                    {
-                        "id": 3,
-                        "type": "subtitles",
-                        "codec": "S_TEXT/UTF8",
-                        "properties": {
-                            "codec_id": "S_TEXT/UTF8",
-                            "language": "ger"
+                }
+            },
+            "tracks": [
+                {
+                    "id": 2,
+                    "type": "subtitles",
+                    "codec": "S_TEXT/UTF8",
+                    "properties": {
+                        "codec_id": "S_TEXT/UTF8",
+                        "language": "cze"
                     }
-                    },
-                    {
-                        "id": 4,
-                        "type": "subtitles",
-                        "codec": "S_TEXT/UTF8",
-                        "properties": {
-                            "codec_id": "S_TEXT/UTF8",
-                            "language": "gre"
-                        }
-                    },
-                    {
-                        "id": 5,
-                        "type": "subtitles",
-                        "codec": "S_TEXT/UTF8",
-                        "properties": {
-                            "codec_id": "S_TEXT/UTF8",
-                            "language": "fre"
-                        }
-                    },
-                    {
-                        "id": 6,
-                        "type": "subtitles",
-                        "codec": "S_TEXT/UTF8",
-                        "properties": {
-                            "codec_id": "S_TEXT/UTF8",
-                            "language": "may"
-                        }
-                    },
-                    {
-                        "id": 7,
-                        "type": "subtitles",
-                        "codec": "S_TEXT/UTF8",
-                        "properties": {
-                            "codec_id": "S_TEXT/UTF8",
-                            "language": "dut"
-                        }
-                    },
-                    {
-                        "id": 8,
-                        "type": "subtitles",
-                        "codec": "S_TEXT/UTF8",
-                        "properties": {
-                            "codec_id": "S_TEXT/UTF8",
-                            "language": "rum"
-                        }
-                    },
-                    {
-                        "id": 9,
-                        "type": "subtitles",
-                        "codec": "S_TEXT/UTF8",
-                        "properties": {
-                            "codec_id": "S_TEXT/UTF8",
-                            "language": "chi"
-                        }
-                    },
-                    {
-                        "id": 10,
-                        "type": "subtitles",
-                        "codec": "S_TEXT/UTF8",
-                        "properties": {
-                            "codec_id": "S_TEXT/UTF8",
-                            "language": "baq"
-                        }
+                },
+                {
+                    "id": 3,
+                    "type": "subtitles",
+                    "codec": "S_TEXT/UTF8",
+                    "properties": {
+                        "codec_id": "S_TEXT/UTF8",
+                        "language": "ger"
                     }
-                ]
-            }
+                },
+                {
+                    "id": 4,
+                    "type": "subtitles",
+                    "codec": "S_TEXT/UTF8",
+                    "properties": {
+                        "codec_id": "S_TEXT/UTF8",
+                        "language": "gre"
+                    }
+                },
+                {
+                    "id": 5,
+                    "type": "subtitles",
+                    "codec": "S_TEXT/UTF8",
+                    "properties": {
+                        "codec_id": "S_TEXT/UTF8",
+                        "language": "fre"
+                    }
+                },
+                {
+                    "id": 6,
+                    "type": "subtitles",
+                    "codec": "S_TEXT/UTF8",
+                    "properties": {
+                        "codec_id": "S_TEXT/UTF8",
+                        "language": "may"
+                    }
+                },
+                {
+                    "id": 7,
+                    "type": "subtitles",
+                    "codec": "S_TEXT/UTF8",
+                    "properties": {
+                        "codec_id": "S_TEXT/UTF8",
+                        "language": "dut"
+                    }
+                },
+                {
+                    "id": 8,
+                    "type": "subtitles",
+                    "codec": "S_TEXT/UTF8",
+                    "properties": {
+                        "codec_id": "S_TEXT/UTF8",
+                        "language": "rum"
+                    }
+                },
+                {
+                    "id": 9,
+                    "type": "subtitles",
+                    "codec": "S_TEXT/UTF8",
+                    "properties": {
+                        "codec_id": "S_TEXT/UTF8",
+                        "language": "chi"
+                    }
+                },
+                {
+                    "id": 10,
+                    "type": "subtitles",
+                    "codec": "S_TEXT/UTF8",
+                    "properties": {
+                        "codec_id": "S_TEXT/UTF8",
+                        "language": "baq"
+                    }
+                }
+            ]
+        }
 
     with patch("subprocess.run") as mock_subp:
         mock_subp.return_value = subprocess.CompletedProcess(
