@@ -354,7 +354,7 @@ def get_binary_path(tool_name):
 
     Args:
         tool_name (str): The name of a tool to pass to a subprocess.
-    
+
     Returns:
         str: The directory path of the tool's executable.
     """
