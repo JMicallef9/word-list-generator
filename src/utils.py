@@ -14,6 +14,8 @@ import tempfile
 import subprocess
 import json
 import pycountry
+import sys
+import platform
 
 
 def extract_text_from_file(filepath):
@@ -271,7 +273,7 @@ def extract_text_from_mkv(filepath, track_num, output_path=None):
 
     try:
         subprocess.run([
-                "mkvextract", filepath, "tracks",
+                get_binary_path("mkvextract"), filepath, "tracks",
                 f"{track_num}:{output}"
             ], check=True)
 
@@ -308,7 +310,7 @@ def list_subtitle_tracks(filepath):
 
     try:
         result = subprocess.run(
-            ["mkvmerge", "-J", filepath],
+            [get_binary_path("mkvmerge"), "-J", filepath],
             capture_output=True,
             text=True,
             check=True
@@ -344,3 +346,23 @@ def list_subtitle_tracks(filepath):
 
     except subprocess.CalledProcessError as e:
         raise ValueError(f"An error occurred. {e}")
+
+
+def get_binary_path(tool_name):
+    """
+    Returns the absolute path to an executable binary.
+
+    Args:
+        tool_name (str): The name of a tool to pass to a subprocess.
+    
+    Returns:
+        str: The directory path of the tool's executable.
+    """
+    base = getattr(sys, '_MEIPASS', Path(__file__).parent)
+
+    directory = "windows" if platform.system() == "Windows" else "linux"
+
+    if platform.system() == "Windows":
+        tool_name += ".exe"
+
+    return str(Path(base) / "bin" / directory / tool_name)
