@@ -358,7 +358,10 @@ def get_binary_path(tool_name):
     Returns:
         str: The directory path of the tool's executable.
     """
-    base = getattr(sys, '_MEIPASS', Path(__file__).parent)
+    if Path("/.dockerenv").exists():
+        return tool_name
+
+    base = getattr(sys, '_MEIPASS', Path(__file__).parent.parent)
 
     directory = "windows" if platform.system() == "Windows" else "linux"
 
