@@ -1,12 +1,18 @@
-from src.anki_utils import get_anki_decks
-from utils.utils import get_cards_by_date
+from utils import get_cards_by_creation_date, get_deck_id, get_anki_decks_from_sql
 import sys
 import time
+import os
+import sqlite3
 
 
 while True:
 
-    decks = get_anki_decks()[1:]
+    anki_path = os.getenv("ANKI_COLLECTION_PATH")
+
+    conn = sqlite3.connect(anki_path)
+    cursor = conn.cursor()
+
+    decks = get_anki_decks_from_sql(cursor)
 
     print("Please select a deck using the deck number:\n")
 
@@ -64,8 +70,12 @@ while True:
         side = "front"
         print("\nRetrieving from the front of each card.")
     
-    results = get_cards_by_date(selected, user_date, side)
-    print(results)
+
+    deck_id = get_deck_id(cursor, selected)
+
+    results = get_cards_by_creation_date(cursor, deck_id, user_date, side)
+
+    conn.close()
 
     output_file = "anki_cards_output.txt"
 
@@ -73,6 +83,7 @@ while True:
         for item in results:
             f.write(item.strip() + "\n\n")
 
+    print("\nText successfully saved to anki_cards_output.txt")
     sys.exit()
 
 
