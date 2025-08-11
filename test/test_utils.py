@@ -591,7 +591,8 @@ def mock_mkv_subs(tmp_path):
 
     with (
         patch("tempfile.NamedTemporaryFile") as mock_temp,
-        patch("subprocess.run") as mock_subp
+        patch("subprocess.run") as mock_subp,
+        patch("src.utils.get_binary_path", return_value="mkvextract")
     ):
         mock_temp.return_value.__enter__.return_value.name = str(example_srt)
         yield {
