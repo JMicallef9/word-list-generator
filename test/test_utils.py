@@ -7,7 +7,8 @@ from src.utils import (extract_text_from_file,
                        extract_file_list,
                        extract_text_from_url,
                        extract_text_from_mkv,
-                       list_subtitle_tracks)
+                       list_subtitle_tracks,
+                       get_binary_path)
 import pytest
 import csv
 import docx
@@ -858,3 +859,15 @@ class TestListSubtitleTracks:
             'Chinese',
             'Basque'
             ]
+
+class TestGetBinaryPath:
+    """Tests for the get_binary_path function."""
+
+    @patch("src.utils.platform.system")
+    @patch("pathlib.Path.exists", return_value=True)
+    def test_tool_name_returned_using_docker(self, mock_exists, mock_platform):
+        """Checks that tool name returned when run via Docker."""
+
+        assert get_binary_path("mkvextract") == "mkvextract"
+        mock_exists.assert_called_once_with()
+        mock_platform.assert_not_called()
