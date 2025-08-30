@@ -597,7 +597,6 @@ def mock_mkv_subs(tmp_path):
     ):
         mock_temp.return_value.__enter__.return_value.name = str(example_srt)
         yield {
-            "mock_temp": mock_temp,
             "mock_subp": mock_subp,
             "temp_path": str(example_srt)
             }
