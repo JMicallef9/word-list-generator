@@ -361,17 +361,17 @@ def get_binary_path(tool_name):
     """
     if Path("/.dockerenv").exists():
         return tool_name
-    
+
     if platform.system() == "Windows":
         directory = "windows"
         tool_name += ".exe"
     else:
-        directory = "linux"    
-    
+        directory = "linux"
+
     if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
         base = Path(sys._MEIPASS)
         return str(base / "bin" / directory / tool_name)
-    
+
     system_path = shutil.which(tool_name)
     if system_path:
         return tool_name

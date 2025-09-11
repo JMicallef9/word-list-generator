@@ -859,6 +859,7 @@ class TestListSubtitleTracks:
             'Basque'
             ]
 
+
 class TestGetBinaryPath:
     """Tests for the get_binary_path function."""
 
