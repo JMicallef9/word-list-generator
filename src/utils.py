@@ -16,6 +16,7 @@ import json
 import pycountry
 import sys
 import platform
+import shutil
 
 
 def extract_text_from_file(filepath):
@@ -356,16 +357,25 @@ def get_binary_path(tool_name):
         tool_name (str): The name of a tool to pass to a subprocess.
 
     Returns:
-        str: The directory path of the tool's executable.
+        str: The tool name or executable directory path.
     """
     if Path("/.dockerenv").exists():
         return tool_name
-
-    base = getattr(sys, '_MEIPASS', Path(__file__).parent.parent)
-
-    directory = "windows" if platform.system() == "Windows" else "linux"
-
+    
     if platform.system() == "Windows":
+        directory = "windows"
         tool_name += ".exe"
+    else:
+        directory = "linux"    
+    
+    if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
+        base = Path(sys._MEIPASS)
+        return str(base / "bin" / directory / tool_name)
+    
+    system_path = shutil.which(tool_name)
+    if system_path:
+        return tool_name
 
-    return str(Path(base) / "bin" / directory / tool_name)
+    base = Path(__file__).parent.parent
+
+    return str(base / "bin" / directory / tool_name)
