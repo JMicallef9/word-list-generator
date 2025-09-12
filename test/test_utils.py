@@ -880,6 +880,26 @@ class TestGetBinaryPath:
         result_path = Path(result)
 
         assert result_path.parts[-3:] == ("bin", "windows", "mkvextract.exe")
+    
+    @pytest.mark.parametrize(
+            "system, expected",
+            [
+                ("Windows", ("bin", "windows", "mkvextract.exe")),
+                ("Darwin", ("bin", "linux", "mkvextract"))
+            ]
+        )
+    def test_correct_filepaths_returned(self, system, expected):
+        """Checks that correct Windows/Linux binary path returned."""
+        with patch("src.utils.platform.system", return_value=system), \
+            patch("src.utils.shutil.which", return_value=None):
+            result = get_binary_path("mkvextract")
+
+            result_path = Path(result)
+
+            assert result_path.parts[-3:] == expected
 
 
 
+
+# test_tool_name_returned_if_exists_in_system
+# test_returns_path_when_run_in_pyinstaller
