@@ -20,6 +20,7 @@ from pathlib import Path
 import subprocess
 import json
 import textwrap
+import sys
 
 
 @pytest.fixture
@@ -902,6 +903,14 @@ class TestGetBinaryPath:
     def test_tool_name_returned_if_exists_in_system(self, mock_shutil):
         """Checks tool name is returned if accessible via system path."""
         assert get_binary_path("mkvextract") == "mkvextract"
+    
+    @patch.object(sys, "frozen", True, create=True)
+    @patch.object(sys, "_MEIPASS", "test_filepath", create=True)
+    def test_path_returned_when_run_in_pyinstaller(self):
+        result = get_binary_path("mkvextract")
+
+        assert result == "test_filepath/bin/linux/mkvextract"
+
 
         
 
