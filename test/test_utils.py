@@ -898,8 +898,14 @@ class TestGetBinaryPath:
 
             assert result_path.parts[-3:] == expected
 
+    @patch("shutil.which", return_value="test_path")
+    def test_tool_name_returned_if_exists_in_system(self, mock_shutil):
+        """Checks tool name is returned if accessible via system path."""
+        assert get_binary_path("mkvextract") == "mkvextract"
+
+        
 
 
 
-# test_tool_name_returned_if_exists_in_system
+
 # test_returns_path_when_run_in_pyinstaller
