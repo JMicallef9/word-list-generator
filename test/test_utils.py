@@ -873,15 +873,6 @@ class TestGetBinaryPath:
         mock_exists.assert_called_once_with()
         mock_platform.assert_not_called()
     
-    @patch("src.utils.platform.system", return_value="Windows")
-    def test_correct_windows_path_returned(self, mock_platform):
-        """Checks that correct Windows binary path is returned."""
-        result = get_binary_path("mkvextract")
-
-        result_path = Path(result)
-
-        assert result_path.parts[-3:] == ("bin", "windows", "mkvextract.exe")
-    
     @pytest.mark.parametrize(
             "system, expected",
             [
@@ -910,11 +901,3 @@ class TestGetBinaryPath:
         result = get_binary_path("mkvextract")
 
         assert result == "test_filepath/bin/linux/mkvextract"
-
-
-        
-
-
-
-
-# test_returns_path_when_run_in_pyinstaller
