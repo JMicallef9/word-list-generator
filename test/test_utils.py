@@ -872,7 +872,7 @@ class TestGetBinaryPath:
         assert get_binary_path("mkvextract") == "mkvextract"
         mock_exists.assert_called_once_with()
         mock_platform.assert_not_called()
-    
+
     @pytest.mark.parametrize(
             "system, expected",
             [
@@ -883,7 +883,7 @@ class TestGetBinaryPath:
     def test_correct_filepaths_returned(self, system, expected):
         """Checks that correct Windows/Linux binary path returned."""
         with patch("src.utils.platform.system", return_value=system), \
-            patch("src.utils.shutil.which", return_value=None):
+        patch("src.utils.shutil.which", return_value=None):
             result = get_binary_path("mkvextract")
 
             result_path = Path(result)
@@ -894,7 +894,7 @@ class TestGetBinaryPath:
     def test_tool_name_returned_if_exists_in_system(self, mock_shutil):
         """Checks tool name is returned if accessible via system path."""
         assert get_binary_path("mkvextract") == "mkvextract"
-    
+
     @patch.object(sys, "frozen", True, create=True)
     @patch.object(sys, "_MEIPASS", "test_filepath", create=True)
     def test_path_returned_when_run_in_pyinstaller(self):
