@@ -882,8 +882,10 @@ class TestGetBinaryPath:
         )
     def test_correct_filepaths_returned(self, system, expected):
         """Checks that correct Windows/Linux binary path returned."""
-        with patch("src.utils.platform.system", return_value=system), \
-            patch("src.utils.shutil.which", return_value=None):
+        with (
+            patch("src.utils.platform.system", return_value=system),
+            patch("src.utils.shutil.which", return_value=None)
+        ):
             result = get_binary_path("mkvextract")
 
             result_path = Path(result)
