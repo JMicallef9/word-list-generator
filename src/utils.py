@@ -362,13 +362,17 @@ def get_binary_path(tool_name):
     if Path("/.dockerenv").exists():
         return tool_name
 
-    if platform.system() == "Windows":
+    system = platform.system()
+
+    if system == "Windows":
         directory = "windows"
         tool_name += ".exe"
-    elif platform.system() == "Linux":
+    elif system == "Linux":
         directory = "linux"
-    else:
+    elif system == "Darwin":
         directory = "macos"
+    else:
+        raise RuntimeError(f"Unsupported operating system: {system}.")
 
     if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
         base = Path(sys._MEIPASS)
