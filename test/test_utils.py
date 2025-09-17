@@ -905,3 +905,11 @@ class TestGetBinaryPath:
             result = get_binary_path("mkvextract")
 
             assert result == "test_filepath/bin/macos/mkvextract"
+    
+    @patch("src.utils.platform.system", return_value="invalid")
+    def test_error_raised_if_unsupported_system(self, mock_platform):
+        with pytest.raises(RuntimeError) as err:
+            get_binary_path("mkvextract")
+        
+        assert str(err.value) == "Unsupported operating system: invalid."
+
