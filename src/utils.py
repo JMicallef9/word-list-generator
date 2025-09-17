@@ -365,8 +365,10 @@ def get_binary_path(tool_name):
     if platform.system() == "Windows":
         directory = "windows"
         tool_name += ".exe"
-    else:
+    elif platform.system() == "Linux":
         directory = "linux"
+    else:
+        directory = "macos"
 
     if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
         base = Path(sys._MEIPASS)
