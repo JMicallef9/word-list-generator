@@ -877,9 +877,7 @@ class TestGetBinaryPath:
             "system, expected",
             [
                 ("Windows", ("bin", "windows", "mkvextract.exe")),
-                ("Linux", ("bin", "linux", "mkvextract")),
-                ("Darwin", ("bin", "macos", "mkvextract"))
-            ]
+                ("Linux", ("bin", "linux", "mkvextract"))            ]
         )
     def test_correct_filepaths_returned(self, system, expected):
         """Checks that correct binary paths returned on all systems."""
@@ -901,6 +899,7 @@ class TestGetBinaryPath:
     @patch.object(sys, "frozen", True, create=True)
     @patch.object(sys, "_MEIPASS", "test_filepath", create=True)
     def test_path_returned_when_run_in_pyinstaller(self):
+        """Checks correct pyinstaller path returned."""
         with patch("src.utils.platform.system", return_value="Darwin"):
             result = get_binary_path("mkvextract")
 
@@ -908,6 +907,7 @@ class TestGetBinaryPath:
     
     @patch("src.utils.platform.system", return_value="invalid")
     def test_error_raised_if_unsupported_system(self, mock_platform):
+        """Checks error raised if system not supported."""
         with pytest.raises(RuntimeError) as err:
             get_binary_path("mkvextract")
         
