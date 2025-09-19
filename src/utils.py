@@ -363,25 +363,43 @@ def get_binary_path(tool_name):
         return tool_name
 
     system = platform.system()
+    tool_path = shutil.which(tool_name)
 
-    if system == "Windows":
-        directory = "windows"
-        tool_name += ".exe"
-    elif system == "Linux":
-        directory = "linux"
-    elif system == "Darwin":
-        directory = "macos"
+    if system == "Darwin":
+        if tool_path:
+            return tool_name
+        else:
+            raise RuntimeError(
+                "MKVToolNix is not installed.\n"
+                "Please install MKVToolNix using Homebrew:\n"
+                "brew install mkvtoolnix"
+            )
+    
+    if system in ["Linux", "Windows"]:
+        
+        if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
+            base = Path(sys._MEIPASS)
+
+            if system == "Windows":
+                directory = "windows"
+                tool_name += ".exe"
+            else:
+                directory = "linux"
+
+            return str(base / "bin" / directory / tool_name)
+
+        if tool_path:
+            return tool_name
+        
+        base = Path(__file__).parent.parent
+
+        if system == "Windows":
+            directory = "windows"
+            tool_name += ".exe"
+        else:
+            directory = "linux"
+
+        return str(base / "bin" / directory / tool_name)
+        
     else:
         raise RuntimeError(f"Unsupported operating system: {system}.")
-
-    if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
-        base = Path(sys._MEIPASS)
-        return str(base / "bin" / directory / tool_name)
-
-    system_path = shutil.which(tool_name)
-    if system_path:
-        return tool_name
-
-    base = Path(__file__).parent.parent
-
-    return str(base / "bin" / directory / tool_name)
