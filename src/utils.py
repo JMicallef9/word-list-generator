@@ -374,9 +374,9 @@ def get_binary_path(tool_name):
                 "Please install MKVToolNix using Homebrew:\n"
                 "brew install mkvtoolnix"
             )
-    
+
     if system in ["Linux", "Windows"]:
-        
+
         if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
             base = Path(sys._MEIPASS)
 
@@ -390,7 +390,7 @@ def get_binary_path(tool_name):
 
         if tool_path:
             return tool_name
-        
+
         base = Path(__file__).parent.parent
 
         if system == "Windows":
@@ -400,6 +400,6 @@ def get_binary_path(tool_name):
             directory = "linux"
 
         return str(base / "bin" / directory / tool_name)
-        
+
     else:
         raise RuntimeError(f"Unsupported operating system: {system}.")

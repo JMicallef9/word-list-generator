@@ -839,14 +839,18 @@ class TestListSubtitleTracks:
         assert isinstance(output[2]['id'], int)
 
     @patch("shutil.which", return_value="test_path")
-    def test_error_raised_if_subprocess_fails(self, mock_shutil, mkvmerge_error):
+    def test_error_raised_if_subprocess_fails(
+        self, mock_shutil, mkvmerge_error
+    ):
         """Checks that ValueError is raised if subprocess fails."""
         with pytest.raises(ValueError) as err:
             list_subtitle_tracks("test.mkv")
         assert "An error occurred" in str(err.value)
 
     @patch("shutil.which", return_value="test_path")
-    def test_replaces_deprecated_language_codes(self, mock_shutil, mock_old_codes):
+    def test_replaces_deprecated_language_codes(
+        self, mock_shutil, mock_old_codes
+    ):
         """Checks that old language codes are replaced with new ones."""
         output = list_subtitle_tracks("test.mkv")
 
@@ -881,7 +885,8 @@ class TestGetBinaryPath:
             "system, expected",
             [
                 ("Windows", ("bin", "windows", "mkvextract.exe")),
-                ("Linux", ("bin", "linux", "mkvextract"))            ]
+                ("Linux", ("bin", "linux", "mkvextract"))
+            ]
         )
     def test_correct_filepaths_returned(self, system, expected):
         """Checks that correct binary paths returned on all systems."""
@@ -897,7 +902,9 @@ class TestGetBinaryPath:
 
     @patch("src.utils.platform.system", return_value="Windows")
     @patch("shutil.which", return_value="test_path")
-    def test_tool_name_returned_if_exists_on_windows(self, mock_shutil, mock_platform):
+    def test_tool_name_returned_if_exists_on_windows(
+        self, mock_shutil, mock_platform
+    ):
         """Checks tool name is returned if accessible via system path."""
         assert get_binary_path("mkvextract") == "mkvextract"
 
@@ -909,15 +916,15 @@ class TestGetBinaryPath:
             result = get_binary_path("mkvextract")
 
             assert result == "test_filepath/bin/windows/mkvextract.exe"
-    
+
     @patch("src.utils.platform.system", return_value="invalid")
     def test_error_raised_if_unsupported_system(self, mock_platform):
         """Checks error raised if system not supported."""
         with pytest.raises(RuntimeError) as err:
             get_binary_path("mkvextract")
-        
+
         assert str(err.value) == "Unsupported operating system: invalid."
-    
+
     @patch("src.utils.platform.system", return_value="Darwin")
     @patch("shutil.which", return_value="test_path")
     def test_returns_path_if_run_in_macos(self, mock_shutil, mock_platform):
@@ -928,11 +935,13 @@ class TestGetBinaryPath:
 
     @patch("src.utils.platform.system", return_value="Darwin")
     @patch("shutil.which", return_value=None)
-    def test_returns_macos_error_if_tool_not_installed(self, mock_shutil, mock_platform):
+    def test_returns_macos_error_if_tool_not_installed(
+        self, mock_shutil, mock_platform
+    ):
         """Checks system path is returned in macOS."""
         with pytest.raises(RuntimeError) as err:
             get_binary_path("mkvextract")
-        
+
         assert str(err.value) == (
                 "MKVToolNix is not installed.\n"
                 "Please install MKVToolNix using Homebrew:\n"
