@@ -1,10 +1,30 @@
 # -*- mode: python ; coding: utf-8 -*-
 
+import platform
+from pathlib import Path
+
+binaries = []
+
+system = platform.system()
+
+if system == "Windows":
+    bin_path = Path("bin/windows")
+    binaries = [
+        (str(bin_path / "mkvmerge.exe"), "bin/windows"),
+        (str(bin_path / "mkvextract.exe"), "bin/windows") 
+    ]
+elif system == "Linux":
+    bin_path = Path("bin/linux")
+    binaries = [
+        (str(bin_path / "mkvmerge"), "bin/linux"),
+        (str(bin_path / "mkvextract"), "bin/linux") 
+    ]
+
 
 a = Analysis(
     ['src/script.py'],
-    pathex=[],
-    binaries=[],
+    pathex=[str(Path(__file__).parent)],
+    binaries=binaries,
     datas=[],
     hiddenimports=[],
     hookspath=[],
@@ -26,7 +46,7 @@ exe = EXE(
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
-    upx=True,
+    upx=False,
     upx_exclude=[],
     runtime_tmpdir=None,
     console=True,
