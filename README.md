@@ -54,8 +54,9 @@ Finally, the script will ask for a filename and destination for the output word 
 - For optional Anki filtering:
     - [Anki](https://apps.ankiweb.net/) installed locally
     - [AnkiConnect add-on](https://ankiweb.net/shared/info/2055492159)
-- Optional: mkvtoolnix system install
-    - This is not required, as executable binaries are already bundled in the project folder. However, `mkvextract` will be used automatically if installed system-wide and available in your `PATH`.
+- Optional: MKVToolNix system install
+    - This is not required when running on Windows or Linux, as executable binaries are already bundled in the project folder. However, `mkvextract` will be used automatically if installed system-wide and available in your `PATH`.
+    - If running on macOS, MKVToolNix must be installed and available in your `PATH` before running the app.
 
 ### Running with Docker
 - Docker - all Python dependencies and `mkvtoolnix` are included in the image.
