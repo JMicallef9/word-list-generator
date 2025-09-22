@@ -927,7 +927,9 @@ class TestGetBinaryPath:
 
     @patch("src.utils.platform.system", return_value="Darwin")
     @patch("shutil.which", return_value="test_path")
-    def test_returns_tool_name_if_run_in_macos(self, mock_shutil, mock_platform):
+    def test_returns_tool_name_if_run_in_macos(
+        self, mock_shutil, mock_platform
+    ):
         """Checks tool name is returned in macOS."""
         result = get_binary_path("mkvextract")
 
