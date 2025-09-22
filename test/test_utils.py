@@ -927,8 +927,8 @@ class TestGetBinaryPath:
 
     @patch("src.utils.platform.system", return_value="Darwin")
     @patch("shutil.which", return_value="test_path")
-    def test_returns_path_if_run_in_macos(self, mock_shutil, mock_platform):
-        """Checks system path is returned in macOS."""
+    def test_returns_tool_name_if_run_in_macos(self, mock_shutil, mock_platform):
+        """Checks tool name is returned in macOS."""
         result = get_binary_path("mkvextract")
 
         assert result == "mkvextract"
@@ -938,7 +938,7 @@ class TestGetBinaryPath:
     def test_returns_macos_error_if_tool_not_installed(
         self, mock_shutil, mock_platform
     ):
-        """Checks system path is returned in macOS."""
+        """Checks error returned in macOS if tool not installed."""
         with pytest.raises(RuntimeError) as err:
             get_binary_path("mkvextract")
 
