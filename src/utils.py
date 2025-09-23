@@ -29,7 +29,7 @@ def extract_text_from_file(filepath):
     Returns:
         str: The text from the file, with timestamps/formatting removed.
     """
-    valid_formats = ['.srt', '.txt', '.md', '.docx', '.pdf', '.epub']
+    valid_formats = ['.srt', '.txt', '.md', '.docx', '.pdf', '.epub', ".ass", ".ssa"]
 
     filepath = Path(filepath)
 
@@ -67,6 +67,9 @@ def extract_text_from_file(filepath):
                 if item.get_type() == ITEM_DOCUMENT:
                     soup = BeautifulSoup(item.get_content(), 'html.parser')
                     text += soup.get_text().strip()
+        
+        elif filepath.suffix in [".ass", ".ssa"]:
+            text = extract_ssa_text(filepath)
 
         else:
             with open(filepath, encoding="utf-8-sig") as f:
@@ -86,6 +89,35 @@ def extract_text_from_file(filepath):
     except RuntimeError:
         raise RuntimeError(f"Error: Could not read the file '{filepath}'")
 
+def extract_ssa_text(filepath):
+    """
+    Removes timestamps and formatting from SSA-formatted subtitle files.
+
+    Args:
+        filepath (str): The path to a file containing some text.
+
+    Returns:
+        str: The text from the file, with timestamps/formatting removed.
+    """
+    filepath = Path(filepath)
+
+    with open(filepath, encoding="utf-8-sig") as f:
+        text = f.read()
+    
+    lines = text.splitlines()
+    cleaned_lines = []
+
+    for line in lines:
+        if line.startswith("Dialogue:"):
+            parts = line.split(",", 9)
+            if len(parts) == 10:
+                dialogue_text = parts[-1]
+                dialogue_text = re.sub(r"\{.*?\}", "", dialogue_text)
+                dialogue_text = re.sub(r'\\[Nn]', ' ', dialogue_text)
+
+                cleaned_lines.append(dialogue_text)
+
+    return unicodedata.normalize("NFC", " ".join(cleaned_lines))
 
 def generate_word_list(text):
     """
