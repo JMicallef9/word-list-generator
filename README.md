@@ -3,7 +3,7 @@
 A Python application that extracts all unique words from a text file or URL and saves an alphabetical list of the words to a `.csv` file.
 
 The application supports the following input formats: 
-- Text-based files: `.txt`, `.srt`, `.md`, `.docx`, `.pdf`, `.epub`, `.mkv`
+- Text-based files: `.txt`, `.srt`, `.md`, `.docx`, `.pdf`, `.epub`, `.mkv`, `.ass`, `.ssa`
 - URLs (web content)
 - `.mkv` subtitle tracks (via subtitle extraction with `mkvtoolnix`)
 
