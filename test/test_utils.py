@@ -305,6 +305,13 @@ class TestGenerateWordList:
         text = "4 foxes jumped over 2 3-year-old dogs?"
         assert generate_word_list(text) == {
             'foxes': 1, 'jumped': 1, 'over': 1, '3-year-old': 1, 'dogs': 1}
+    
+    def test_removes_newline_characters(self):
+        """Checks newline characters are removed."""
+        text = "gada,\nuključiti."
+        assert generate_word_list(text) == {
+            'gada': 1, 'uključiti': 1
+        }
 
 
 class TestConvertToCSVWithTranslations:
