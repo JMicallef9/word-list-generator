@@ -8,7 +8,8 @@ from src.utils import (extract_text_from_file,
                        extract_text_from_url,
                        extract_text_from_mkv,
                        list_subtitle_tracks,
-                       get_binary_path)
+                       get_binary_path,
+                       extract_ssa_text)
 import pytest
 import csv
 import docx
@@ -35,6 +36,32 @@ def example_csv(tmp_path):
     """Creates a temporary .csv file for testing."""
     example_csv = tmp_path / 'example.csv'
     return example_csv
+
+
+@pytest.fixture
+def example_ssa(tmp_path):
+    """Creates a temporary .ssa file for testing."""
+
+    ssa_content = textwrap.dedent("""
+        [Script Info]
+        ScriptType: v4.00+
+        Collisions: Normal
+        PlayResX: 1920
+        PlayResY: 960
+        Timer: 100.0
+        WrapStyle: 0
+        ScaledBorderAndShadow: yes
+
+        [V4+ Styles]
+        Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+        Style: Default,sans-serif,71,&H00FFFFFF,&H00FFFFFF,&H000F0F0F,&H000F0F0F,0,0,0,0,100,100,0,0.00,1,2.37,1.97,2,20,20,20,0
+
+        [Events]
+        Format: Layer, Start, End, Style, Actor, MarginL, MarginR, MarginV, Effect, Text
+    """)
+    example_ssa = tmp_path / 'example.ssa'
+    example_ssa.write_text(ssa_content)
+    return example_ssa
 
 
 @pytest.fixture
@@ -200,6 +227,26 @@ class TestExtractTextFromFile:
 
         assert "here is some text" in extract_text_from_file(epub_path)
         assert "and now some more text" in extract_text_from_file(epub_path)
+
+    def test_ssa_extractor_correctly_called(self, example_ssa):
+        """Checks that correct function is called for .ssa files."""
+        with patch("src.utils.extract_ssa_text") as mock_ssa:
+            mock_ssa.return_value = "dummy text"
+            result = extract_text_from_file(example_ssa)
+            mock_ssa.assert_called_once_with(example_ssa)
+            assert result == "dummy text"
+
+    def test_handles_ssa_files(self, example_ssa):
+        """Checks that .ssa files are correctly handled."""
+        first_line = r"Dialogue: 0,0:00:25.77,0:00:27.23,Default,,0,0,0,,{\i1}Kamo misliš da ideš?{\i0}"
+        second_line = r"Dialogue: 0,0:24:39.68,0:24:42.18,Default,,0,0,0,,- Razmišljao sam.\N- Da?"
+
+        with example_ssa.open("a") as f:
+            f.write("\n" + first_line)
+            f.write("\n" + second_line)
+
+        output = extract_text_from_file(example_ssa)
+        assert output == "Kamo misliš da ideš? - Razmišljao sam. - Da?"
 
 
 class TestGenerateWordList:
@@ -956,3 +1003,30 @@ class TestGetBinaryPath:
                 "Please install MKVToolNix using Homebrew:\n"
                 "brew install mkvtoolnix"
             )
+
+
+class TestExtractSSAText:
+    """Tests for the clean_ssa_text function."""
+
+    def test_removes_formatting_on_single_sentence(self, example_ssa):
+        """Checks single sentence is cleaned and returned."""
+
+        new_line = r"Dialogue: 0,0:00:25.77,0:00:27.23,Default,,0,0,0,,{\i1}Kamo misliš da ideš?{\i0}"
+
+        with example_ssa.open("a") as f:
+            f.write("\n" + new_line)
+
+        output = extract_ssa_text(example_ssa)
+        assert output == "Kamo misliš da ideš?"
+
+
+    def test_removes_newline_characters(self, example_ssa):
+        """Checks newline characters are removed."""
+
+        new_line = r"Dialogue: 0,0:24:39.68,0:24:42.18,Default,,0,0,0,,- Razmišljao sam.\N- Da?"
+
+        with example_ssa.open("a") as f:
+            f.write("\n" + new_line)
+
+        output = extract_ssa_text(example_ssa)
+        assert output == "- Razmišljao sam. - Da?"
