@@ -29,7 +29,7 @@ def extract_text_from_file(filepath):
     Returns:
         str: The text from the file, with timestamps/formatting removed.
     """
-    valid_formats = ['.srt', '.txt', '.md', '.docx', '.pdf', '.epub', ".ass", ".ssa"]
+    valid_formats = ['.srt', '.txt', '.md', '.docx', '.pdf', '.epub']
 
     filepath = Path(filepath)
 
@@ -67,13 +67,17 @@ def extract_text_from_file(filepath):
                 if item.get_type() == ITEM_DOCUMENT:
                     soup = BeautifulSoup(item.get_content(), 'html.parser')
                     text += soup.get_text().strip()
-        
-        elif filepath.suffix in [".ass", ".ssa"]:
-            text = extract_ssa_text(filepath)
 
         else:
             with open(filepath, encoding="utf-8-sig") as f:
-                text = f.read()
+                lines = f.readlines()
+            
+            first_line = next((l.strip() for l in lines if l.strip()), "")
+
+            if first_line.startswith("[Script Info]"):
+                text = extract_ssa_text(filepath)
+            else:
+                text = "".join(lines)
 
         cleaned_text = re.sub(combined_pattern, "", text)
         cleaned_text = re.sub(
