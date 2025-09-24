@@ -40,7 +40,7 @@ def example_csv(tmp_path):
 
 @pytest.fixture
 def example_ssa(tmp_path):
-    """Creates a temporary .ssa file for testing."""
+    """Creates a temporary SSA-formatted .srt file."""
 
     ssa_content = textwrap.dedent("""
         [Script Info]
@@ -59,7 +59,7 @@ def example_ssa(tmp_path):
         [Events]
         Format: Layer, Start, End, Style, Actor, MarginL, MarginR, MarginV, Effect, Text
     """)
-    example_ssa = tmp_path / 'example.ssa'
+    example_ssa = tmp_path / 'example.srt'
     example_ssa.write_text(ssa_content)
     return example_ssa
 
@@ -237,7 +237,7 @@ class TestExtractTextFromFile:
             assert result == "dummy text"
 
     def test_handles_ssa_files(self, example_ssa):
-        """Checks that .ssa files are correctly handled."""
+        """Checks that SSA-formatted files are correctly handled."""
         first_line = r"Dialogue: 0,0:00:25.77,0:00:27.23,Default,,0,0,0,,{\i1}Kamo misliš da ideš?{\i0}"
         second_line = r"Dialogue: 0,0:24:39.68,0:24:42.18,Default,,0,0,0,,- Razmišljao sam.\N- Da?"
 
