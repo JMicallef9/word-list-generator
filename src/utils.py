@@ -75,7 +75,7 @@ def extract_text_from_file(filepath):
             first_line = next(
                 (
                     line.strip() for line in lines if line.strip()
-                ), 
+                ),
                 ""
             )
 
