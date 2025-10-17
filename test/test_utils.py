@@ -42,7 +42,7 @@ def example_csv(tmp_path):
 def example_ssa(tmp_path):
     """Creates a temporary SSA-formatted .srt file."""
     ssa_content = textwrap.dedent(
-        (
+    (
         "[Script Info]\n"
         "ScriptType: v4.00+\n"
         "Collisions: Normal\n"
@@ -61,8 +61,8 @@ def example_ssa(tmp_path):
         "[Events]\n"
         "Format: Layer, Start, End, Style, Actor, MarginL, MarginR, MarginV, "
         "Effect, Text\n"
-        )
     )
+)
     example_ssa = tmp_path / "example.srt"
     example_ssa.write_text(ssa_content)
     return example_ssa
