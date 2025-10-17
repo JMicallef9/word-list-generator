@@ -42,27 +42,27 @@ def example_csv(tmp_path):
 def example_ssa(tmp_path):
     """Creates a temporary SSA-formatted .srt file."""
     ssa_content = textwrap.dedent(
-    (
-        "[Script Info]\n"
-        "ScriptType: v4.00+\n"
-        "Collisions: Normal\n"
-        "PlayResX: 1920\n"
-        "PlayResY: 960\n"
-        "Timer: 100.0\n"
-        "WrapStyle: 0\n"
-        "ScaledBorderAndShadow: yes\n\n"
-        "[V4+ Styles]\n"
-        "Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, "
-        "OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, "
-        "ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, "
-        "Alignment, MarginL, MarginR, MarginV, Encoding\n"
-        "Style: Default,sans-serif,71,&H00FFFFFF,&H00FFFFFF,&H000F0F0F,"
-        "&H000F0F0F,0,0,0,0,100,100,0,0.00,1,2.37,1.97,2,20,20,20,0\n\n"
-        "[Events]\n"
-        "Format: Layer, Start, End, Style, Actor, MarginL, MarginR, MarginV, "
-        "Effect, Text\n"
+        (
+            "[Script Info]\n"
+            "ScriptType: v4.00+\n"
+            "Collisions: Normal\n"
+            "PlayResX: 1920\n"
+            "PlayResY: 960\n"
+            "Timer: 100.0\n"
+            "WrapStyle: 0\n"
+            "ScaledBorderAndShadow: yes\n\n"
+            "[V4+ Styles]\n"
+            "Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, "
+            "OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, "
+            "ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, "
+            "Alignment, MarginL, MarginR, MarginV, Encoding\n"
+            "Style: Default,sans-serif,71,&H00FFFFFF,&H00FFFFFF,&H000F0F0F,"
+            "&H000F0F0F,0,0,0,0,100,100,0,0.00,1,2.37,1.97,2,20,20,20,0\n\n"
+            "[Events]\n"
+            "Format: Layer, Start, End, Style, Actor, MarginL, MarginR, MarginV, "
+            "Effect, Text\n"
+        )
     )
-)
     example_ssa = tmp_path / "example.srt"
     example_ssa.write_text(ssa_content)
     return example_ssa
