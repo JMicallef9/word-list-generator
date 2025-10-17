@@ -352,7 +352,7 @@ class TestGenerateWordList:
         text = "4 foxes jumped over 2 3-year-old dogs?"
         assert generate_word_list(text) == {
             'foxes': 1, 'jumped': 1, 'over': 1, '3-year-old': 1, 'dogs': 1}
-    
+
     def test_removes_newline_characters(self):
         """Checks newline characters are removed."""
         text = "gada,\nuključiti."
@@ -1018,7 +1018,6 @@ class TestExtractSSAText:
 
         output = extract_ssa_text(example_ssa)
         assert output == "Kamo misliš da ideš?"
-
 
     def test_removes_newline_characters(self, example_ssa):
         """Checks newline characters are removed."""

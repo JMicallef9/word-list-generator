@@ -71,8 +71,13 @@ def extract_text_from_file(filepath):
         else:
             with open(filepath, encoding="utf-8-sig") as f:
                 lines = f.readlines()
-            
-            first_line = next((l.strip() for l in lines if l.strip()), "")
+
+            first_line = next(
+                (
+                    line.strip() for line in lines if line.strip()
+                ), 
+                ""
+            )
 
             if first_line.startswith("[Script Info]"):
                 text = extract_ssa_text(filepath)
@@ -93,6 +98,7 @@ def extract_text_from_file(filepath):
     except RuntimeError:
         raise RuntimeError(f"Error: Could not read the file '{filepath}'")
 
+
 def extract_ssa_text(filepath):
     """
     Removes timestamps and formatting from SSA-formatted subtitle files.
@@ -107,7 +113,7 @@ def extract_ssa_text(filepath):
 
     with open(filepath, encoding="utf-8-sig") as f:
         text = f.read()
-    
+
     lines = text.splitlines()
     cleaned_lines = []
 
@@ -122,6 +128,7 @@ def extract_ssa_text(filepath):
                 cleaned_lines.append(dialogue_text)
 
     return unicodedata.normalize("NFC", " ".join(cleaned_lines))
+
 
 def generate_word_list(text):
     """
