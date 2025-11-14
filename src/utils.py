@@ -146,8 +146,9 @@ def generate_word_list(text):
         words = text.lower().split()
         for word in words:
             word = re.sub(rf'^[{punc_chars}]*|[{punc_chars}]*$', '', word)
-            if word and not word.isnumeric():
-                word_freq[word] += 1
+            if not word or not any(char.isalpha() for char in word):
+                continue
+            word_freq[word] += 1
     return word_freq
 
 
