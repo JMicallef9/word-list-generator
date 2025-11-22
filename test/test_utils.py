@@ -370,7 +370,7 @@ class TestGenerateWordList:
         assert generate_word_list(text) == {
             'gada': 1, 'uključiti': 1
         }
-    
+
     def test_retains_apostrophes_within_words(self):
         """Checks apostrophes are kept within words."""
         text = "Be careful, don't jump!"
@@ -380,7 +380,7 @@ class TestGenerateWordList:
             "don't": 1,
             "jump": 1
         }
-    
+
     def test_discards_timestamps_with_colons(self):
         """Ensures timestamps with colons are removed."""
         text = "Be there at 11:00"
