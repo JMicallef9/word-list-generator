@@ -389,6 +389,25 @@ class TestGenerateWordList:
             "there": 1,
             "at": 1
         }
+    
+    def test_removes_numbers_from_start_of_words(self):
+        """Checks numbers are removed from the start of words."""
+        text = "2000-s, 22hello, 23nobody, 22все"
+        assert generate_word_list(text) == {
+            "2000-s": 1,
+            "hello": 1,
+            "nobody": 1,
+            "все": 1
+        }
+    
+    def test_removes_numbers_from_end_of_words(self):
+        """Checks numbers are removed from end of words."""
+        text = "фалаке[2 hello, фалаке[2, friends"
+        assert generate_word_list(text) == {
+            "фалаке": 2,
+            "hello": 1,
+            "friends": 1
+        }
 
 
 class TestConvertToCSVWithTranslations:
