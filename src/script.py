@@ -28,7 +28,8 @@ from utils import (
     extract_file_list,
     extract_text_from_url,
     list_subtitle_tracks,
-    extract_text_from_mkv)
+    extract_text_from_mkv,
+    optionally_save_text)
 from anki_utils import get_anki_decks, get_words_from_deck
 from pathlib import Path
 import time
@@ -174,6 +175,7 @@ def word_list_generator():
                 else:
                     try:
                         text = extract_text_from_file(path_input)
+                        optionally_save_text(text, path.with_suffix(".txt"))
                         file_texts.append(text)
                         print(
                             f"\nFile processed successfully: {path_input}."
