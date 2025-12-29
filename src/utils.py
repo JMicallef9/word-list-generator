@@ -141,10 +141,13 @@ def generate_word_list(text):
         dict: A dictionary containing words and word counts.
     """
     word_freq = defaultdict(int)
-    punc_chars = punctuation + '¿¡♪«»—©‘’–‚”“„•'
+    extra_punc = '¿¡♪«»—©‘’–‚”“„•[]【】〔〕〚〛'
+    punc_chars = re.escape(punctuation + extra_punc)
     if text:
         words = text.lower().split()
         for word in words:
+            word = re.sub(r"^\d+(?=[^\W\d_])", "", word, flags=re.UNICODE)
+            word = re.sub(r"\[\d+\W*", "", word)
             word = re.sub(rf'^[{punc_chars}]*|[{punc_chars}]*$', '', word)
             if not word or not any(char.isalpha() for char in word):
                 continue
@@ -447,3 +450,30 @@ def get_binary_path(tool_name):
 
     else:
         raise RuntimeError(f"Unsupported operating system: {system}.")
+
+
+def optionally_save_text(text, default_path):
+    """
+    Asks user whether to save text as a file.
+
+    Args:
+        text (str): Text extracted from a file
+        default_path (Path): Suggested output path (without suffix or with .txt)
+    """
+    choice = input(
+        "\nWould you like to save a copy of the extracted text? "
+        "Press Y to save, or any other key to continue: "
+    ).strip().lower()
+
+    if choice != "y":
+        return
+
+    if default_path.suffix == "":
+        default_path = default_path.with_suffix(".txt")
+
+    try:
+        with default_path.open("w", encoding="utf-8") as f:
+            f.write(text)
+        print(f"\nText saved to: {default_path}")
+    except Exception as e:
+        print(f"\nFailed to save text: {e}")
